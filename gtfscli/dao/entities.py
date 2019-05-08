@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session, relationship, sessionmaker
+from sqlalchemy.orm import relationship
 
 CONNECTION_STRING = 'sqlite:///:memory:'
 Base = declarative_base()
