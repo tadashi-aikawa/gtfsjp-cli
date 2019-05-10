@@ -36,7 +36,8 @@ class DbClient():
         )
 
     def insert_tables(self):
-        [self.insert_records(e["clz"], e["file"]) for e in ENTITIES]
+        for e in ENTITIES:
+            self.insert_records(e["clz"], e["file"])
         self.session.commit()
 
     def __init__(self, base: str, encoding: str):
