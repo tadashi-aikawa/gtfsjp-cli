@@ -31,10 +31,10 @@
         },
         "owcli": {
             "hashes": [
-                "sha256:d62c965b00fa62b19b4ce93abd20bd5b6355295b6a99c698aac7961b30af50ad"
+                "sha256:294dc4db5afa88b86c8e06d4ffa76e93cb7bfdbe216ec381677a329103b2605a"
             ],
             "index": "pypi",
-            "version": "==0.2.0"
+            "version": "==0.3.0"
         },
         "owlmixin": {
             "hashes": [

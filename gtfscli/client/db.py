@@ -28,19 +28,23 @@ class DbClient():
 
     stop: StopDao
 
-    def insert_all(self):
-        for e in ENTITIES:
-            self.session.add_all([
-                e["clz"](**x)
-                for x in load_csvf(os.path.join(self.base, e['file']), fieldnames=None, encoding=self.encoding)
-            ])
+    def insert_records(self, clz, file_name: str):
+        # スピード優先でcoreを使う
+        self.session.execute(
+            clz.__table__.insert(),
+            load_csvf(os.path.join(self.base, file_name), fieldnames=None, encoding=self.encoding)
+        )
+
+    def insert_tables(self):
+        [self.insert_records(e["clz"], e["file"]) for e in ENTITIES]
+        self.session.commit()
 
     def __init__(self, base: str, encoding: str):
         self.base = base
         self.encoding = encoding
         engine = create_engine(CONNECTION_STRING, echo=False)
-        self.session = sessionmaker(bind=engine)()
+        self.session: Session = sessionmaker(bind=engine)()
         Base.metadata.create_all(engine)
-        self.insert_all()
+        self.insert_tables()
 
         self.stop = StopDao(self.session)
