@@ -1,4 +1,4 @@
-"""Get data related to stops
+"""停留所/標柱情報の取得
 
 Usage:
   {cli} --id <id> [<source>]

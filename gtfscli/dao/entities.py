@@ -9,6 +9,37 @@ from sqlalchemy.orm import relationship
 Base = declarative_base()
 
 
+class AgencyEntity(Base):
+    """事業者情報
+    """
+    __tablename__ = 'agency'
+
+    agency_id: str = Column(String, primary_key=True)    # ID
+    agency_name: str = Column(String, nullable=False)    # 名称
+    agency_url: str = Column(String, nullable=False)    # URL
+    agency_timezone: str = Column(String, nullable=False)    # タイムゾーン(Asia/Tokyo固定)
+    agency_lang: str = Column(String)    # 言語(ja固定)
+    agency_phone: str = Column(String)    # 電話番号 (xx-xxxx-xxxx)
+    agency_fare_url: str = Column(String)    # オンライン購入URL
+    agency_email: str = Column(String)    # 事業者Eメール
+
+    extra: 'AgencyJpEntity' = relationship("AgencyJpEntity", uselist=False)
+
+
+class AgencyJpEntity(Base):
+    """事業者追加情報
+    """
+    __tablename__ = 'agency_jp'
+
+    # XXX: primary keyではないけどORMはprimary keyナシを認めないので追加. 後で定義が変わる可能性は高い
+    agency_id: str = Column(String, ForeignKey("agency.agency_id"), primary_key=True)    # ID
+    agency_official_name: str = Column(String)    # 正式名称
+    agency_zip_number: str = Column(String)    # 郵便番号(xxxyyyy)
+    agency_address: str = Column(String)    # 住所(All全角)
+    agency_president_pos: str = Column(String)    # 代表者肩書き
+    agency_president_name: str = Column(String)    # 代表者氏名
+
+
 class StopEntity(Base):
     """停留所・標柱
     """

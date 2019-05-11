@@ -5,7 +5,29 @@ from typing import Iterable
 from owlmixin import OwlMixin, TList, TOption
 
 from gtfscli.client.db import DbClient
-from gtfscli.dao.entities import StopEntity
+from gtfscli.dao.entities import StopEntity, AgencyEntity
+
+
+class Agency(OwlMixin):
+    id: str
+    name: str
+    zip_number: TOption[str]
+    president_name: TOption[str]
+
+    @classmethod
+    def from_db_record(cls, record: AgencyEntity) -> 'Agency':
+        return Agency.from_dict(
+            {
+                "id": record.agency_id,
+                "name": record.agency_name,
+                "zip_number": record.extra.agency_zip_number,
+                "president_name": record.extra.agency_president_name,
+            }
+        )
+
+    @classmethod
+    def from_db_records(cls, records: Iterable[AgencyEntity]) -> 'TList[Agency]':
+        return TList(records).map(cls.from_db_record)
 
 
 class Stop(OwlMixin):
@@ -14,7 +36,7 @@ class Stop(OwlMixin):
     times: TList[str]
 
     @classmethod
-    def from_db_record(cls, record: StopEntity) -> 'TOption[Stop]':
+    def from_db_record(cls, record: StopEntity) -> 'Stop':
         return Stop.from_dict(
             {
                 "id": record.stop_id,
@@ -43,3 +65,6 @@ class GtfsClient():
 
     def search_stops_by_name(self, name: str) -> TList[Stop]:
         return Stop.from_db_records(self.db.stop.search_by_name(name))
+
+    def fetch_agencies(self) -> TList[Agency]:
+        return Agency.from_db_records(self.db.agency.all())
