@@ -15,11 +15,13 @@ class Stop(OwlMixin):
 
     @classmethod
     def from_db_record(cls, record: StopEntity) -> 'TOption[Stop]':
-        return Stop.from_dict({
-            "id": record.stop_id,
-            "name": record.stop_name,
-            "times": [x.departure_time for x in record.stop_times]
-        })
+        return Stop.from_dict(
+            {
+                "id": record.stop_id,
+                "name": record.stop_name,
+                "times": [x.departure_time for x in record.stop_times]
+            }
+        )
 
     @classmethod
     def from_db_records(cls, records: Iterable[StopEntity]) -> 'TList[Stop]':
@@ -29,8 +31,12 @@ class Stop(OwlMixin):
 class GtfsClient():
     db: DbClient
 
-    def __init__(self, gtfsdir: str, encoding: str = "utf_8_sig"):
-        self.db: DbClient = DbClient(gtfsdir, encoding)
+    def __init__(self, source: str = "gtfs-jp.sqlite3"):
+        self.db: DbClient = DbClient(source)
+
+    def drop_and_create(self, gtfs_dir: str, encoding: str = "utf_8_sig"):
+        self.db.drop_database()
+        self.db.create_database_with_inserts(gtfs_dir, encoding)
 
     def find_stop_by_id(self, id_: str) -> TOption[Stop]:
         return TOption(self.db.stop.find_by_id(id_)).map(Stop.from_db_record)
