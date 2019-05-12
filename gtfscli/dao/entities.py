@@ -370,7 +370,7 @@ class ShapeEntity(Base):
     """描画経度 - 度/世界測地系? (ex: 139.76833)"""
     shape_pt_sequence: int = Column(Integer, primary_key=True)
     """描画順序 (ex: 0)"""
-    shape_dist_traveleded: Optional[int] = Column(Integer)
+    shape_dist_traveled: Optional[int] = Column(Integer)
     """描画距離 - 使用しない"""
 
     trip: TripEntity = relationship("TripEntity", uselist=False, back_populates="shapes")
