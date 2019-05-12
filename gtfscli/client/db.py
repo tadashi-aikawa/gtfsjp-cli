@@ -139,8 +139,11 @@ class DbClient():
         Base.metadata.drop_all(self.engine)
 
     def __insert_records(self, gtfs_dir: str, clz, file_name: str, encoding: str, drop_duplicates: bool):
-        dicts = load_csvf(
-            os.path.join(gtfs_dir, file_name), fieldnames=None, encoding=encoding, drop_duplicates=drop_duplicates
+        dicts = list(
+            load_csvf(
+                os.path.join(gtfs_dir, file_name), fieldnames=None, encoding=encoding, drop_duplicates=drop_duplicates
+            )
         )
-        # スピード優先でcoreを使う
-        self.session.execute(clz.__table__.insert(), list(dicts))
+        if dicts:
+            # スピード優先でcoreを使う
+            self.session.execute(clz.__table__.insert(), dicts)
