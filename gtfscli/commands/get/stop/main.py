@@ -26,15 +26,15 @@ class Args(OwlMixin):
 
 
 def search_by_id(source: str, id_: str) -> str:
-    return GtfsClient(source).find_stop_by_id(id_)\
-        .map(lambda x: f"[{x.id}]: {x.name}")\
+    return GtfsClient(source).find_stop_by_id(id_) \
+        .map(lambda x: f"[{x.id}]: {x.name}") \
         .get_or(f"Not found id = {id_}")
 
 
 def search_by_word(source: str, word: str) -> str:
-    return GtfsClient(source)\
-        .search_stops_by_name(word)\
-        .map(lambda x: x.str_format("{id}: {name}"))\
+    return GtfsClient(source) \
+        .search_stops_by_name(word) \
+        .map(lambda x: x.str_format("{id}: {name}")) \
         .join("\n")
 
 

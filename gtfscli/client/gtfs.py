@@ -16,14 +16,12 @@ class Agency(OwlMixin):
 
     @classmethod
     def from_db_record(cls, record: AgencyEntity) -> 'Agency':
-        return Agency.from_dict(
-            {
-                "id": record.agency_id,
-                "name": record.agency_name,
-                "zip_number": record.extra.agency_zip_number,
-                "president_name": record.extra.agency_president_name,
-            }
-        )
+        return Agency.from_dict({
+            "id": record.agency_id,
+            "name": record.agency_name,
+            "zip_number": record.extra.agency_zip_number,
+            "president_name": record.extra.agency_president_name,
+        })
 
     @classmethod
     def from_db_records(cls, records: Iterable[AgencyEntity]) -> 'TList[Agency]':
@@ -37,13 +35,11 @@ class Stop(OwlMixin):
 
     @classmethod
     def from_db_record(cls, record: StopEntity) -> 'Stop':
-        return Stop.from_dict(
-            {
-                "id": record.stop_id,
-                "name": record.stop_name,
-                "times": [x.departure_time for x in record.stop_times]
-            }
-        )
+        return Stop.from_dict({
+            "id": record.stop_id,
+            "name": record.stop_name,
+            "times": [x.departure_time for x in record.stop_times]
+        })
 
     @classmethod
     def from_db_records(cls, records: Iterable[StopEntity]) -> 'TList[Stop]':
@@ -61,6 +57,7 @@ class GtfsClient():
         self.db.create_database_with_inserts(gtfs_dir, encoding)
 
     def find_stop_by_id(self, id_: str) -> TOption[Stop]:
+        self.db.stop.find_by_id(id_).stop_id
         return TOption(self.db.stop.find_by_id(id_)).map(Stop.from_db_record)
 
     def search_stops_by_name(self, name: str) -> TList[Stop]:
