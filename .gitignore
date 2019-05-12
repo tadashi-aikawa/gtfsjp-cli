@@ -105,6 +105,8 @@ venv.bak/
 
 # vscode
 /.vscode
+# IDEA
+/.idea
 
 # sqlite
 *.sqlite3
