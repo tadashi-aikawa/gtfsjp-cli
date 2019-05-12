@@ -99,8 +99,7 @@ def load_csvf(fpath: str, fieldnames: Optional[List[str]], encoding: str = "utf-
         it = csv.DictReader(f, fieldnames=fieldnames, dialect=dialect)
 
         if not drop_duplicates:
-            for current in it:
-                yield current
+            yield from it
         else:
             sorted_list = sorted(it, key=lambda x: json.dumps(x, ensure_ascii=False))
             previous: str = None
