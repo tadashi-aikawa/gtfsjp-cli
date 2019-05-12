@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import csv
+import json
 import os
 from typing import List, Optional, Iterable
 
@@ -79,14 +80,35 @@ ENTITIES = [
 ]
 
 
-def load_csvf(fpath: str, fieldnames: Optional[List[str]], encoding: str = "utf-8") -> List[dict]:
+def load_csvf(fpath: str, fieldnames: Optional[List[str]], encoding: str = "utf-8",
+              drop_duplicates: bool = False) -> Iterable[dict]:
+    """CSVファイルを読み込みます
+
+    Args:
+        fpath: CSVファイルのパス
+        fieldnames: カラム名 (Noneの場合はヘッダの値を使用します)
+        encoding: エンコーディング
+        drop_duplicates: 完全重複するレコードを削除するかどうか
+    """
     with open(fpath, mode='r', encoding=encoding) as f:
         snippet = f.read(8192)
         f.seek(0)
 
         dialect = csv.Sniffer().sniff(snippet)
         dialect.skipinitialspace = True
-        return list(csv.DictReader(f, fieldnames=fieldnames, dialect=dialect))
+        it = csv.DictReader(f, fieldnames=fieldnames, dialect=dialect)
+
+        if not drop_duplicates:
+            for current in it:
+                yield current
+        else:
+            sorted_list = sorted(it, key=lambda x: json.dumps(x, ensure_ascii=False))
+            previous: str = None
+            for current in sorted_list:
+                if drop_duplicates and current == previous:
+                    continue
+                yield current
+                previous = current
 
 
 class DbClient():
@@ -104,16 +126,18 @@ class DbClient():
         self.agency = AgencyDao(self.session)
         self.stop = StopDao(self.session)
 
-    def create_database_with_inserts(self, gtfs_dir: str, encoding: str):
+    def create_database_with_inserts(self, gtfs_dir: str, encoding: str, drop_duplicates: bool):
         Base.metadata.create_all(self.engine)
         for e in [x for x in ENTITIES if os.path.exists(os.path.join(gtfs_dir, x["file"]))]:
-            self.__insert_records(gtfs_dir, e["clz"], e["file"], encoding)
+            self.__insert_records(gtfs_dir, e["clz"], e["file"], encoding, drop_duplicates)
         self.session.commit()
 
     def drop_database(self):
         Base.metadata.drop_all(self.engine)
 
-    def __insert_records(self, gtfs_dir: str, clz, file_name: str, encoding: str):
-        dicts = load_csvf(os.path.join(gtfs_dir, file_name), fieldnames=None, encoding=encoding)
+    def __insert_records(self, gtfs_dir: str, clz, file_name: str, encoding: str, drop_duplicates: bool):
+        dicts = load_csvf(
+            os.path.join(gtfs_dir, file_name), fieldnames=None, encoding=encoding, drop_duplicates=drop_duplicates
+        )
         # スピード優先でcoreを使う
-        self.session.execute(clz.__table__.insert(), dicts)
+        self.session.execute(clz.__table__.insert(), list(dicts))

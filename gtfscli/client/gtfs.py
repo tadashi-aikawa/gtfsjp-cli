@@ -52,9 +52,9 @@ class GtfsClient():
     def __init__(self, source: str = "gtfs-jp.sqlite3"):
         self.db: DbClient = DbClient(source)
 
-    def drop_and_create(self, gtfs_dir: str, encoding: str = "utf_8_sig"):
+    def drop_and_create(self, gtfs_dir: str, *, encoding: str = "utf_8_sig", drop_duplicates: bool = False):
         self.db.drop_database()
-        self.db.create_database_with_inserts(gtfs_dir, encoding)
+        self.db.create_database_with_inserts(gtfs_dir, encoding, drop_duplicates)
 
     def find_stop_by_id(self, id_: str) -> TOption[Stop]:
         self.db.stop.find_by_id(id_).stop_id
