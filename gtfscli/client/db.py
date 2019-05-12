@@ -1,16 +1,19 @@
 #!/usr/bin/env python
 
+import csv
 import os
+from typing import List, Optional, Iterable
 
-from owlmixin.util import load_csvf
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from gtfscli.dao.agency import AgencyDao
 from gtfscli.dao.entities import (
-    Base, StopEntity, StopTimeEntity, AgencyEntity, AgencyJpEntity, CalendarEntity, CalendarDatesEntity
+    Base, StopEntity, StopTimeEntity, AgencyEntity, AgencyJpEntity, CalendarEntity, RouteEntity, RouteJpEntity,
+    TripEntity, OfficeJpEntity, FareRuleEntity, FareAttributeEntity, CalendarDateEntity, ShapeEntity, FeedInfoEntity,
+    TranslationEntity
 )
 from gtfscli.dao.stop import StopDao
-from gtfscli.dao.agency import AgencyDao
 
 ENTITIES = [
     {
@@ -20,6 +23,22 @@ ENTITIES = [
     {
         "file": "agency_jp.txt",
         "clz": AgencyJpEntity
+    },
+    {
+        "file": "routes.txt",
+        "clz": RouteEntity
+    },
+    {
+        "file": "routes_jp.txt",
+        "clz": RouteJpEntity
+    },
+    {
+        "file": "trips.txt",
+        "clz": TripEntity
+    },
+    {
+        "file": "office_jp.txt",
+        "clz": OfficeJpEntity
     },
     {
         "file": "stops.txt",
@@ -35,9 +54,39 @@ ENTITIES = [
     },
     {
         "file": "calendar_dates.txt",
-        "clz": CalendarDatesEntity
+        "clz": CalendarDateEntity
+    },
+    {
+        "file": "fare_attributes.txt",
+        "clz": FareAttributeEntity
+    },
+    {
+        "file": "fare_rules.txt",
+        "clz": FareRuleEntity
+    },
+    {
+        "file": "shapes.txt",
+        "clz": ShapeEntity
+    },
+    {
+        "file": "feed_info.txt",
+        "clz": FeedInfoEntity
+    },
+    {
+        "file": "translations.txt",
+        "clz": TranslationEntity
     },
 ]
+
+
+def load_csvf(fpath: str, fieldnames: Optional[List[str]], encoding: str = "utf-8") -> List[dict]:
+    with open(fpath, mode='r', encoding=encoding) as f:
+        snippet = f.read(8192)
+        f.seek(0)
+
+        dialect = csv.Sniffer().sniff(snippet)
+        dialect.skipinitialspace = True
+        return list(csv.DictReader(f, fieldnames=fieldnames, dialect=dialect))
 
 
 class DbClient():
@@ -57,7 +106,7 @@ class DbClient():
 
     def create_database_with_inserts(self, gtfs_dir: str, encoding: str):
         Base.metadata.create_all(self.engine)
-        for e in ENTITIES:
+        for e in [x for x in ENTITIES if os.path.exists(os.path.join(gtfs_dir, x["file"]))]:
             self.__insert_records(gtfs_dir, e["clz"], e["file"], encoding)
         self.session.commit()
 
@@ -65,7 +114,6 @@ class DbClient():
         Base.metadata.drop_all(self.engine)
 
     def __insert_records(self, gtfs_dir: str, clz, file_name: str, encoding: str):
+        dicts = load_csvf(os.path.join(gtfs_dir, file_name), fieldnames=None, encoding=encoding)
         # スピード優先でcoreを使う
-        self.session.execute(
-            clz.__table__.insert(), load_csvf(os.path.join(gtfs_dir, file_name), fieldnames=None, encoding=encoding)
-        )
+        self.session.execute(clz.__table__.insert(), dicts)

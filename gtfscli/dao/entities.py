@@ -1,5 +1,11 @@
 #!/usr/bin/env python
-"""Refer to https://www.gtfs.jp/developpers-guide/format-reference.html
+"""参考 https://www.gtfs.jp/developpers-guide/format-reference.html
+
+必要性の低いものは一旦定義していません。
+
+* 運行間隔情報 (frequencies.txt)
+* 乗換情報 (transfers.txt)
+
 """
 
 from typing import Iterable
@@ -33,7 +39,7 @@ class AgencyEntity(Base):
     agency_email: str = Column(String)
     """事業者Eメール"""
 
-    extra: 'AgencyJpEntity' = relationship("AgencyJpEntity", uselist=False, back_populates="origins")
+    extra: 'AgencyJpEntity' = relationship("AgencyJpEntity", uselist=False, back_populates="origin")
     """紐づく事業者追加情報"""
 
 
@@ -56,7 +62,7 @@ class AgencyJpEntity(Base):
     agency_president_name: str = Column(String)
     """代表者氏名 (ex: 東京　太郎)"""
 
-    origins: Iterable[AgencyEntity] = relationship("AgencyEntity", uselist=True, back_populates="extra")
+    origin: Iterable[AgencyEntity] = relationship("AgencyEntity", uselist=False, back_populates="extra")
     """紐づく事業者情報"""
 
 
@@ -94,6 +100,99 @@ class StopEntity(Base):
 
     stop_times: Iterable['StopTimeEntity'] = relationship("StopTimeEntity", uselist=True, back_populates="stop")
     """紐づく通過時刻情報"""
+
+
+class RouteEntity(Base):
+    """経路情報
+    """
+    __tablename__ = 'routes'
+
+    route_id: str = Column(String, primary_key=True)
+    """経路ID (ex: 1001)"""
+    agency_id: str = Column(String, nullable=False)
+    """事業者ID (ex: 8000020130001)"""
+    route_short_name: str = Column(String)
+    """経路略称 - route_long_nameが無い場合は必須 (ex: 東16)"""
+    route_long_name: str = Column(String)
+    """経路名 - route_short_nameが無い場合は必須 (ex: 東京駅八重洲口～月島駅前～東京ビ ッグサイト)"""
+    route_desc: str = Column(String)
+    """経路情報 - trip_descを使えない場合のみ使うことを推奨"""
+    route_type: int = Column(Integer, nullable=False)
+    """経路タイプ - バス事業者は『3』に固定"""
+    route_url: str = Column(String)
+    """経路URL - 経路情報の案内サイトURLなど"""
+    route_color: str = Column(String)
+    """経路色 - 線やラベルに使用する色 (ex: FFD700)"""
+    route_text_color: str = Column(String)
+    """経路文字色 - 線やラベル上の文字に使用する色 (ex: 000000)"""
+    jp_parent_route_id: str = Column(String)
+    """路線ID - 複数経路を束ねるために路線と紐付ける"""
+
+
+class RouteJpEntity(Base):
+    """経路追加情報
+    主キーなしだがSQL Alchemyの動作仕様を満たす為 primary_key=True を全フィールドに付けています
+    """
+    __tablename__ = 'routes_jp'
+
+    route_id: str = Column(String, primary_key=True)
+    """経路ID (ex: 1000)"""
+    route_update_date: str = Column(String, primary_key=True, nullable=True)
+    """ダイヤ改正日 (ex: 20170106)"""
+    origin_stop: str = Column(String, primary_key=True, nullable=True)
+    """起点 (ex: 東京都八重洲口)"""
+    via_stop: str = Column(String, primary_key=True, nullable=True)
+    """経過地 (ex: 月島駅)"""
+    destination_stop: str = Column(String, primary_key=True, nullable=True)
+    """終点 (ex: 東京ビッグサイト)"""
+
+
+class TripEntity(Base):
+    """便情報
+    """
+    __tablename__ = 'trips'
+
+    route_id: str = Column(String, nullable=False)
+    """経路ID (ex: 1000)"""
+    service_id: str = Column(String, nullable=False)
+    """運行ID - ??? (ex: 平日（月～金）)"""
+    trip_id: str = Column(String, primary_key=True)
+    """便ID (ex: 1001WD001)"""
+    trip_headsign: str = Column(String)
+    """便行先 (ex: 東京ビッグサイト（月島駅経由）)"""
+    trip_short_name: str = Column(String)
+    """便名称 (ex: 荻エクスプレス1号)"""
+    direction_id: int = Column(Integer)
+    """上下区分 - 0:復路 1:往路"""
+    block_id: str = Column(String)
+    """便結合区分 - 連続乗車が可能なものに使用?"""
+    shape_id: str = Column(String)
+    """描画ID (ex: S_1001)"""
+    wheelchair_accessible: int = Column(Integer)
+    """車いす利用区分 - 0:情報なし 1:乗車可能性あり 2:乗車不可"""
+    bikes_allowed: int = Column(Integer)
+    """自転車持込区分 - 0:情報なし 1:乗車可能性あり 2:乗車不可"""
+    jp_trip_desc: str = Column(String)
+    """便情報 - 特殊な運行など便の補足説明"""
+    jp_trip_desc_symbol: str = Column(String)
+    """便記号 - 時刻に付ける凡例"""
+    jp_office_id: str = Column(String)
+    """営業所ID (ex: S)"""
+
+
+class OfficeJpEntity(Base):
+    """営業所
+    """
+    __tablename__ = 'office_jp'
+
+    office_id: str = Column(String, primary_key=True)
+    """営業所ID (ex: S)"""
+    office_name: str = Column(String, nullable=False)
+    """営業所名 (ex: 深川営業所)"""
+    office_url: str = Column(String)
+    """営業所URL - 営業所情報の記載されたサイトURLなど"""
+    office_phone: str = Column(String)
+    """営業所電話番号 (ex: 03-3529-3322)"""
 
 
 class StopTimeEntity(Base):
@@ -158,7 +257,7 @@ class CalendarEntity(Base):
     """紐づく運行日情報"""
 
 
-class CalendarDatesEntity(Base):
+class CalendarDateEntity(Base):
     """運行日情報
     """
     __tablename__ = 'calendar_dates'
@@ -172,3 +271,89 @@ class CalendarDatesEntity(Base):
 
     calendar: CalendarEntity = relationship("CalendarEntity", uselist=False, back_populates="dates")
     """紐づく運行情報"""
+
+
+class FareAttributeEntity(Base):
+    """運賃属性情報
+    """
+    __tablename__ = 'fare_attributes'
+
+    fare_id: str = Column(String, primary_key=True)
+    """運賃ID (ex: F_210)"""
+    price: int = Column(Integer, nullable=False)
+    """運賃 (ex: 210)"""
+    currency_type: str = Column(String, primary_key=True)
+    """通貨 - 日本では『JPY』で固定"""
+    payment_method: int = Column(Integer, nullable=False)
+    """支払いタイミング - 0:乗車後に支払う 1:乗車前に支払う"""
+    transfers: str = Column(String, nullable=False)
+    """乗換 - 0:料金で乗換不可 1:1度乗換可 2:2度乗換可 空白:乗換回数制限なし"""
+    transfer_duration: int = Column(Integer)
+    """乗換有効期限 - 未指定と空白は等価"""
+
+
+class FareRuleEntity(Base):
+    """運賃定義情報
+    """
+    __tablename__ = 'fare_rules'
+
+    fare_id: str = Column(String, primary_key=True)
+    """運賃ID (ex: F_210)"""
+    route_id: str = Column(String, primary_key=True, nullable=True)
+    """経路ID (ex: 1001)"""
+    origin_id: str = Column(String, primary_key=True, nullable=True)
+    """乗車地ゾーン (ex: Z_210)"""
+    destination_id: str = Column(String, primary_key=True, nullable=True)
+    """降車地ゾーン (ex: Z_210)"""
+    contains_id: str = Column(String)
+    """通過ゾーン - 使用していないので不要"""
+
+
+class ShapeEntity(Base):
+    """描画情報
+    """
+    __tablename__ = 'shapes'
+
+    shape_id: str = Column(String, primary_key=True)
+    """描画ID (ex: S_1001)"""
+    shape_pt_lat: str = Column(String, nullable=False)
+    """描画緯度 - 度/世界測地系? (ex: 35.679752)"""
+    shape_pt_lon: str = Column(String, nullable=False)
+    """描画経度 - 度/世界測地系? (ex: 139.76833)"""
+    shape_pt_sequence: int = Column(Integer, primary_key=True)
+    """描画順序 (ex: 0)"""
+    shape_dist_traveleded: int = Column(Integer)
+    """描画距離 - 使用しない"""
+
+
+class FeedInfoEntity(Base):
+    """提供情報
+    主キーなしだがSQL Alchemyの動作仕様を満たす為 primary_key=True を全フィールドに付けています
+    """
+    __tablename__ = 'feed_info'
+
+    feed_publisher_name: str = Column(String, primary_key=True)
+    """提供組織名 (ex: 東京都交通局)"""
+    feed_publisher_url: str = Column(String, primary_key=True)
+    """提供組織URL"""
+    feed_lang: str = Column(String, primary_key=True)
+    """提供言語 - 日本の場合は『ja』"""
+    feed_start_date = Column(String, primary_key=True, nullable=True)
+    """有効期間開始日 - YYYYMMDD形式"""
+    feed_end_date = Column(String, primary_key=True, nullable=True)
+    """有効期間終了日 - YYYYMMDD形式"""
+    feed_version = Column(String, primary_key=True, nullable=True)
+    """提供データバージョン (ex: 20170401A0015)"""
+
+
+class TranslationEntity(Base):
+    """翻訳情報
+    """
+    __tablename__ = 'translations'
+
+    trans_id: str = Column(String, primary_key=True)
+    """翻訳元日本語 - name/desc/headsign/urlで終わるフィールドが対象 (ex: 数寄屋橋)"""
+    lang: str = Column(String, primary_key=True)
+    """言語 - 読み仮名である『ja-Hrkt』は必須 (ex: en)"""
+    translation: str = Column(String, nullable=False)
+    """翻訳先言語 (ex: すきやばし)"""
