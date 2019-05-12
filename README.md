@@ -1,12 +1,18 @@
 # gtfscli
 
-CLI for [GTFS-JP]
+**⚠ 本プロジェクトはお試し版であり、開発中です**
+
+[GTFS-JP]に準拠したデータを操作するCLIです。
 
 [GTFS-JP]: https://www.gtfs.jp/developpers-guide/format-reference.html
 
-One of usage.
+実行例
 
 ```
+# データソース作成
+$ python gtfscli\main.py init db <gtfs_dir_path>
+
+# 停留所/標柱情報取得コマンドのヘルプ表示
 $ python gtfscli\main.py get stop -h
 Get data related to stops
 
@@ -20,18 +26,22 @@ Options:
   -w, --word <word>                 Search word for stop name
   <dir>                             GTFS dir
   -h --help                         Show this screen.
+
+# 東京駅に部分一致するものを取得
+$ python gtfscli\main.py get stop -w 東京
+...
 ```
 
 
-## For developer
+## 開発者向け
 
-### Requirements
+### 動作要件
 
 * pipenv
 
-### Commands
+### コマンド
 
-#### Create and activate env
+#### 仮想環境作成とActivate
 
 ```
 $ pipenv install -d
