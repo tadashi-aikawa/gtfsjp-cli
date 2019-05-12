@@ -101,7 +101,7 @@ class StopTimeEntity(Base):
     """
     __tablename__ = 'stop_times'
 
-    trip_id: str = Column(String, nullable=False, primary_key=True)
+    trip_id: str = Column(String, primary_key=True)
     """便ID (ex: 1001WD001)"""
     arrival_time: str = Column(String, nullable=False)
     """到着時刻 - HH:MM:SS形式 24時以降は 25:01:00のように表記 (ex: 7:00:00)"""
@@ -109,7 +109,7 @@ class StopTimeEntity(Base):
     """出発時刻 - HH:MM:SS形式 24時以降は 25:01:00のように表記 (ex: 7:00:00)"""
     stop_id: str = Column(String, ForeignKey("stops.stop_id"), nullable=False)
     """標柱ID - stops.location_type=0のstopであること (ex: 100_10)"""
-    stop_sequence: int = Column(Integer, nullable=False, primary_key=True)
+    stop_sequence: int = Column(Integer, primary_key=True)
     """通過順位 - 通過順序.. 昇順になっていれば連番である必要はない (ex: 0)"""
     stop_headsign: str = Column(String)
     """停留所行先 - 停留所により案内の行き先が変わる場合に必要 (ex: 東京ビッグサイト (月島駅経由))"""
@@ -124,3 +124,51 @@ class StopTimeEntity(Base):
 
     stop: StopEntity = relationship("StopEntity", uselist=False, back_populates="stop_times")
     """紐づく停留所/標柱情報"""
+
+
+class CalendarEntity(Base):
+    """運行区分情報
+    """
+    __tablename__ = 'calendar'
+
+    service_id: str = Column(String, primary_key=True)
+    """運行ID - ??? (ex: 平日（月～金）)"""
+    monday: int = Column(Integer, nullable=False)
+    """月曜日 - 運行: 1 非運行: 0"""
+    tuesday: int = Column(Integer, nullable=False)
+    """火曜日 - 運行: 1 非運行: 0"""
+    wednesday: int = Column(Integer, nullable=False)
+    """水曜日 - 運行: 1 非運行: 0"""
+    thursday: int = Column(Integer, nullable=False)
+    """木曜日 - 運行: 1 非運行: 0"""
+    friday: int = Column(Integer, nullable=False)
+    """金曜日 - 運行: 1 非運行: 0"""
+    saturday: int = Column(Integer, nullable=False)
+    """土曜日 - 運行: 1 非運行: 0"""
+    sunday: int = Column(Integer, nullable=False)
+    """日曜日 - 運行: 1 非運行: 0"""
+    start_date: str = Column(String, nullable=False)
+    """サービス開始日 - YYYYMMDD形式 (ex: 20170101)"""
+    end_date: str = Column(String, nullable=False)
+    """サービス終了日 - YYYYMMDD形式 (ex: 20171231)"""
+
+    dates: 'Iterable[CalendarDatesEntity]' = relationship(
+        "CalendarDatesEntity", uselist=True, back_populates="calendar"
+    )
+    """紐づく運行日情報"""
+
+
+class CalendarDatesEntity(Base):
+    """運行日情報
+    """
+    __tablename__ = 'calendar_dates'
+
+    service_id: str = Column(String, primary_key=True)
+    """運行ID - ??? (ex: 平日（月～金）)"""
+    date: str = Column(String, primary_key=True)
+    """日付 - YYYYMMDD形式 (ex: 20170503)"""
+    exception_type: int = Column(Integer, nullable=False)
+    """利用タイプ - 運行: 1 非運行: 2"""
+
+    calendar: CalendarEntity = relationship("CalendarEntity", uselist=False, back_populates="dates")
+    """紐づく運行情報"""

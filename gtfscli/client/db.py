@@ -6,7 +6,9 @@ from owlmixin.util import load_csvf
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from gtfscli.dao.entities import (Base, StopEntity, StopTimeEntity, AgencyEntity, AgencyJpEntity)
+from gtfscli.dao.entities import (
+    Base, StopEntity, StopTimeEntity, AgencyEntity, AgencyJpEntity, CalendarEntity, CalendarDatesEntity
+)
 from gtfscli.dao.stop import StopDao
 from gtfscli.dao.agency import AgencyDao
 
@@ -26,6 +28,14 @@ ENTITIES = [
     {
         "file": "stop_times.txt",
         "clz": StopTimeEntity
+    },
+    {
+        "file": "calendar.txt",
+        "clz": CalendarEntity
+    },
+    {
+        "file": "calendar_dates.txt",
+        "clz": CalendarDatesEntity
     },
 ]
 
