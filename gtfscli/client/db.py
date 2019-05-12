@@ -5,6 +5,8 @@ import json
 import os
 from typing import List, Optional, Iterable
 
+import sys
+from halo import Halo
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -139,11 +141,20 @@ class DbClient():
         Base.metadata.drop_all(self.engine)
 
     def __insert_records(self, gtfs_dir: str, clz, file_name: str, encoding: str, drop_duplicates: bool):
+        spinner = Halo(text=f"{file_name:<20} -- Loading", spinner='dots', stream=sys.stderr)
+
+        spinner.start()
         dicts = list(
             load_csvf(
                 os.path.join(gtfs_dir, file_name), fieldnames=None, encoding=encoding, drop_duplicates=drop_duplicates
             )
         )
+        spinner.stop()
+
         if dicts:
+            spinner.start(f"{file_name:<20} -- Insert {len(dicts)} records to `{clz.__table__}`")
             # スピード優先でcoreを使う
             self.session.execute(clz.__table__.insert(), dicts)
+            spinner.succeed()
+        else:
+            spinner.warn(f"{file_name:<19} -- Skip to insert because there are no records.")
