@@ -14,7 +14,9 @@ from gtfscli.dao.entities import (
     TripEntity, OfficeJpEntity, FareRuleEntity, FareAttributeEntity, CalendarDateEntity, ShapeEntity, FeedInfoEntity,
     TranslationEntity
 )
+from gtfscli.dao.route import RouteDao
 from gtfscli.dao.stop import StopDao
+from gtfscli.dao.trip import TripDao
 
 ENTITIES = [
     {
@@ -123,7 +125,9 @@ class DbClient():
         self.session: Session = sessionmaker(bind=self.engine)()
 
         self.agency = AgencyDao(self.session)
+        self.route = RouteDao(self.session)
         self.stop = StopDao(self.session)
+        self.trip = TripDao(self.session)
 
     def create_database_with_inserts(self, gtfs_dir: str, encoding: str, drop_duplicates: bool):
         Base.metadata.create_all(self.engine)

@@ -13,6 +13,9 @@ class StopDao():
     def __init__(self, session: Session):
         self.session = session
 
+    def all(self) -> Iterable[StopEntity]:
+        return self.session.query(StopEntity)
+
     def find_by_id(self, id_: str) -> Optional[StopEntity]:
         return self.session.query(StopEntity).get(id_)
 

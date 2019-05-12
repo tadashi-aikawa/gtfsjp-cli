@@ -19,8 +19,8 @@ class Agency(OwlMixin):
         return Agency.from_dict({
             "id": record.agency_id,
             "name": record.agency_name,
-            "zip_number": record.extra.agency_zip_number,
-            "president_name": record.extra.agency_president_name,
+            "zip_number": record.jp.agency_zip_number,
+            "president_name": record.jp.agency_president_name,
         })
 
     @classmethod
