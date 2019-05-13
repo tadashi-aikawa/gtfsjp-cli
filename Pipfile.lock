@@ -67,10 +67,10 @@
         },
         "owcli": {
             "hashes": [
-                "sha256:294dc4db5afa88b86c8e06d4ffa76e93cb7bfdbe216ec381677a329103b2605a"
+                "sha256:c9d6fb6f578991642e695ab53214ec4619474cb4e440689e481ca7eb83fbc00b"
             ],
             "index": "pypi",
-            "version": "==0.3.0"
+            "version": "==0.4.1"
         },
         "owlmixin": {
             "hashes": [
@@ -151,10 +151,10 @@
         },
         "isort": {
             "hashes": [
-                "sha256:1349c6f7c2a0f7539f5f2ace51a9a8e4a37086ce4de6f78f5f53fb041d0a3cd5",
-                "sha256:f09911f6eb114e5592abe635aded8bf3d2c3144ebcfcaf81ee32e7af7b7d1870"
+                "sha256:49293e2ff590cc8d48bc1f51970548b5b102bf038439ca1af77f352164725628",
+                "sha256:ba69a4be8474be11720636bc2f0cf66f7054d417d4c1dbc1dfe504bb8e739541"
             ],
-            "version": "==4.3.18"
+            "version": "==4.3.19"
         },
         "lazy-object-proxy": {
             "hashes": [
