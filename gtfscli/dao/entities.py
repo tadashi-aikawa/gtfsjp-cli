@@ -39,7 +39,7 @@ class AgencyEntity(Base):
     agency_email: Optional[str] = Column(String)
     """事業者Eメール"""
 
-    jp: 'AgencyJpEntity' = relationship("AgencyJpEntity", uselist=False, back_populates="origin")
+    jp: Optional['AgencyJpEntity'] = relationship("AgencyJpEntity", uselist=False, back_populates="origin")
     """日本特有の追加情報"""
     routes: Iterable["RouteEntity"] = relationship("RouteEntity", uselist=True, back_populates="agency")
     """紐づく事業者追加情報"""
@@ -132,7 +132,7 @@ class RouteEntity(Base):
 
     agency: AgencyEntity = relationship("AgencyEntity", uselist=False, back_populates="routes")
     """事業者"""
-    jp: 'RouteJpEntity' = relationship("RouteJpEntity", uselist=False, back_populates="origin")
+    jp: Optional['RouteJpEntity'] = relationship("RouteJpEntity", uselist=False, back_populates="origin")
     """日本特有の経路追加情報"""
     trips: Iterable['TripEntity'] = relationship("TripEntity", uselist=True, back_populates="route")
     """便一覧"""
