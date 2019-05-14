@@ -11,24 +11,14 @@ Options:
 Examples:
   {cli} tmp.sqlite3
 """
-from owlmixin import OwlMixin, TList
-from gtfscli.client.gtfs import GtfsClient, Agency
+from owlmixin import OwlMixin
+
+from gtfscli.services.agency import fetch_agencies
 
 
 class Args(OwlMixin):
     source: str = "gtfs-jp.sqlite3"
 
 
-def fetch_agencies(source: str) -> TList[Agency]:
-    return GtfsClient(source).fetch_agencies()
-
-
 def run(args: Args):
-    agencies = fetch_agencies(args.source)
-    print(
-        f"""
-事業者: {agencies[0].name}
-〒: {agencies[0].zip_number.get_or("なし")}
-代表者: {agencies[0].president_name.get_or("なし")}
-"""
-    )
+    print(fetch_agencies(args.source).to_pretty_json())
