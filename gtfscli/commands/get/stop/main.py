@@ -16,7 +16,8 @@ Examples:
   {cli} -w 東京 tmp.sqlite3
 """
 from owlmixin import OwlMixin, TOption
-from gtfscli.client.gtfs import GtfsClient
+
+from gtfscli.services.stop import search_by_word, search_by_id
 
 
 class Args(OwlMixin):
@@ -25,19 +26,9 @@ class Args(OwlMixin):
     source: str = "gtfs-jp.sqlite3"
 
 
-def search_by_id(source: str, id_: str) -> str:
-    return GtfsClient(source).find_stop_by_id(id_) \
-        .map(lambda x: f"[{x.id}]: {x.name}") \
-        .get_or(f"Not found id = {id_}")
-
-
-def search_by_word(source: str, word: str) -> str:
-    return GtfsClient(source) \
-        .search_stops_by_name(word) \
-        .map(lambda x: x.str_format("{id}: {name}")) \
-        .join("\n")
-
-
 def run(args: Args):
-    args.id.map(lambda x: print(search_by_id(args.source, x)))
-    args.word.map(lambda x: print(search_by_word(args.source, x)))
+    print(
+        args.id.map(lambda id_: search_by_id(args.source, id_).to_pretty_json()).get()
+        or args.word.map(lambda word: search_by_word(args.source, word).to_pretty_json()).get()
+        or "到達しない領域に到達しました。実装に問題があります"
+    )
