@@ -47,3 +47,7 @@ $ python gtfscli\main.py get stop -w 東京
 $ pipenv install -d
 $ pipenv shell
 ```
+
+### アーキテクチャ
+
+[![](https://cacoo.com/diagrams/FaXrS1rZ5c7SUxiF-4B5CE.png)](https://cacoo.com/diagrams/FaXrS1rZ5c7SUxiF/4B5CE)

@@ -7,9 +7,11 @@ from typing import List, Optional, Iterable
 
 import sys
 from halo import Halo
+from owlmixin import TList, TOption
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from gtfscli.client.gtfs import Agency, Stop, GtfsClient
 from gtfscli.dao.agency import AgencyDao
 from gtfscli.dao.entities import (
     Base, StopEntity, StopTimeEntity, AgencyEntity, AgencyJpEntity, CalendarEntity, RouteEntity, RouteJpEntity,
@@ -84,6 +86,31 @@ ENTITIES = [
 ]
 
 
+def to_agency(record: AgencyEntity) -> 'Agency':
+    return Agency.from_dict({
+        "id": record.agency_id,
+        "name": record.agency_name,
+        "zip_number": record.jp.agency_zip_number if record.jp else None,
+        "president_name": record.jp.agency_president_name if record.jp else None,
+    })
+
+
+def to_agencies(records: Iterable[AgencyEntity]) -> 'TList[Agency]':
+    return TList(records).map(to_agency)
+
+
+def to_stop(record: StopEntity) -> 'Stop':
+    return Stop.from_dict({
+        "id": record.stop_id,
+        "name": record.stop_name,
+        "trip_ids": list(set([x.trip_id for x in record.stop_times]))
+    })
+
+
+def to_stops(records: Iterable[StopEntity]) -> 'TList[Stop]':
+    return TList(records).map(to_stop)
+
+
 def load_csvf(fpath: str, fieldnames: Optional[List[str]], encoding: str = "utf-8",
               drop_duplicates: bool = False) -> Iterable[dict]:
     """CSVファイルを読み込みます
@@ -114,15 +141,17 @@ def load_csvf(fpath: str, fieldnames: Optional[List[str]], encoding: str = "utf-
                 previous = current
 
 
-class DbClient():
+class GtfsDbClient(GtfsClient):
     engine: any
     session: Session
 
-    stop: StopDao
     agency: AgencyDao
+    stop: StopDao
+    route: RouteDao
+    trip: TripDao
 
-    def __init__(self, dbpath: str):
-        connection_string = dbpath or ':memory:'
+    def __init__(self, source: str = "gtfs-jp.sqlite3"):
+        connection_string = source or ':memory:'
         self.engine = create_engine(f'sqlite:///{connection_string}', echo=False)
         self.session: Session = sessionmaker(bind=self.engine)()
 
@@ -131,13 +160,26 @@ class DbClient():
         self.stop = StopDao(self.session)
         self.trip = TripDao(self.session)
 
-    def create_database_with_inserts(self, gtfs_dir: str, encoding: str, drop_duplicates: bool):
+    def drop_and_create(self, gtfs_dir: str, *, encoding: str = "utf_8_sig", drop_duplicates: bool = False):
+        self.__drop_database()
+        self.__create_database_with_inserts(gtfs_dir, encoding, drop_duplicates)
+
+    def find_stop_by_id(self, id_: str) -> TOption[Stop]:
+        return TOption(self.stop.find_by_id(id_)).map(to_stop)
+
+    def search_stops_by_name(self, name: str) -> TList[Stop]:
+        return to_stops(self.stop.search_by_name(name))
+
+    def fetch_agencies(self) -> TList[Agency]:
+        return to_agencies(self.agency.all())
+
+    def __create_database_with_inserts(self, gtfs_dir: str, encoding: str, drop_duplicates: bool):
         Base.metadata.create_all(self.engine)
         for e in [x for x in ENTITIES if os.path.exists(os.path.join(gtfs_dir, x["file"]))]:
             self.__insert_records(gtfs_dir, e["clz"], e["file"], encoding, drop_duplicates)
         self.session.commit()
 
-    def drop_database(self):
+    def __drop_database(self):
         Base.metadata.drop_all(self.engine)
 
     def __insert_records(self, gtfs_dir: str, clz, file_name: str, encoding: str, drop_duplicates: bool):

@@ -15,7 +15,8 @@ Examples:
   {cli} C:\\Users\\gtfs\\Donanbus -d tmp.sqlite3
 """
 from owlmixin import OwlMixin
-from gtfscli.client.gtfs import GtfsClient
+
+from gtfscli.client.gtfsdb import GtfsDbClient
 
 
 class Args(OwlMixin):
@@ -25,4 +26,4 @@ class Args(OwlMixin):
 
 
 def run(args: Args):
-    GtfsClient(args.dst).drop_and_create(args.gtfs_dir, drop_duplicates=args.drop_duplicates)
+    GtfsDbClient(args.dst).drop_and_create(args.gtfs_dir, drop_duplicates=args.drop_duplicates)

@@ -1,5 +1,7 @@
 from owlmixin import OwlMixin, TList
-from gtfscli.client.gtfs import GtfsClient, Agency
+
+from gtfscli.client.gtfs import Agency
+from gtfscli.client.gtfsdb import GtfsDbClient
 
 
 class AgencyDocument(OwlMixin):
@@ -8,5 +10,5 @@ class AgencyDocument(OwlMixin):
 
 
 def fetch_agencies(source: str) -> TList[AgencyDocument]:
-    agencies = GtfsClient(source).fetch_agencies()
+    agencies = GtfsDbClient(source).fetch_agencies()
     return AgencyDocument.from_dict({"count": agencies.size(), "agencies": agencies})

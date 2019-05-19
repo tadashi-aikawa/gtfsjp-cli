@@ -13,7 +13,7 @@ Examples:
 
 from owlmixin import OwlMixin, TList
 
-from gtfscli.client.db import DbClient
+from gtfscli.client.db import GtfsDbClient
 from gtfscli.dao.entities import FareRuleEntity
 
 
@@ -26,7 +26,7 @@ def to_record(x: FareRuleEntity) -> dict:
 
 
 def run(args: Args):
-    route = DbClient("gtfs-jp.sqlite3").route.find_by_id("20002_200243_1")
+    route = GtfsDbClient("gtfs-jp.sqlite3").route.find_by_id("20002_200243_1")
 
     print(
         f"""
