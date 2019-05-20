@@ -10,14 +10,14 @@
 
 from typing import Iterable, Optional
 
-from sqlalchemy import Column, ForeignKey, Integer, String, ForeignKeyConstraint
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-Base = declarative_base()
+BASE = declarative_base()
 
 
-class AgencyEntity(Base):
+class AgencyEntity(BASE):
     """事業者情報
     """
     __tablename__ = 'agency'
@@ -45,7 +45,7 @@ class AgencyEntity(Base):
     """紐づく事業者追加情報"""
 
 
-class AgencyJpEntity(Base):
+class AgencyJpEntity(BASE):
     """事業者追加情報
     """
     __tablename__ = 'agency_jp'
@@ -68,7 +68,7 @@ class AgencyJpEntity(Base):
     """事業者情報"""
 
 
-class StopEntity(Base):
+class StopEntity(BASE):
     """停留所/標柱
     """
     __tablename__ = 'stops'
@@ -104,7 +104,7 @@ class StopEntity(Base):
     """紐づく通過時刻情報"""
 
 
-class RouteEntity(Base):
+class RouteEntity(BASE):
     """経路情報
     """
     __tablename__ = 'routes'
@@ -140,7 +140,7 @@ class RouteEntity(Base):
     """運賃定義情報一覧"""
 
 
-class RouteJpEntity(Base):
+class RouteJpEntity(BASE):
     """経路追加情報
     主キーなしだがSQL Alchemyの動作仕様を満たす為 primary_key=True を全フィールドに付けています
     """
@@ -161,7 +161,7 @@ class RouteJpEntity(Base):
     """経路情報"""
 
 
-class TripEntity(Base):
+class TripEntity(BASE):
     """便情報
     """
     __tablename__ = 'trips'
@@ -205,7 +205,7 @@ class TripEntity(Base):
     """便に紐づく運行区分情報"""
 
 
-class OfficeJpEntity(Base):
+class OfficeJpEntity(BASE):
     """営業所
     """
     __tablename__ = 'office_jp'
@@ -223,7 +223,7 @@ class OfficeJpEntity(Base):
     """営業所に紐づく便一覧"""
 
 
-class StopTimeEntity(Base):
+class StopTimeEntity(BASE):
     """通過時刻情報
     """
     __tablename__ = 'stop_times'
@@ -255,7 +255,7 @@ class StopTimeEntity(Base):
     """紐づく停留所/標柱情報"""
 
 
-class CalendarEntity(Base):
+class CalendarEntity(BASE):
     """運行区分情報
     """
     __tablename__ = 'calendar'
@@ -287,7 +287,7 @@ class CalendarEntity(Base):
     """紐づく便一覧"""
 
 
-class CalendarDateEntity(Base):
+class CalendarDateEntity(BASE):
     """運行日情報
     """
     __tablename__ = 'calendar_dates'
@@ -303,7 +303,7 @@ class CalendarDateEntity(Base):
     """紐づく運行情報"""
 
 
-class FareAttributeEntity(Base):
+class FareAttributeEntity(BASE):
     """運賃属性情報
     """
     __tablename__ = 'fare_attributes'
@@ -327,7 +327,7 @@ class FareAttributeEntity(Base):
     """紐づく運賃定義情報一覧。currency_typeがJPY固定であるため擬似的にone to manyとみなすことができる"""
 
 
-class FareRuleEntity(Base):
+class FareRuleEntity(BASE):
     """運賃定義情報
     """
     __tablename__ = 'fare_rules'
@@ -357,7 +357,7 @@ class FareRuleEntity(Base):
     """降車地の停留所/標柱"""
 
 
-class ShapeEntity(Base):
+class ShapeEntity(BASE):
     """描画情報
     """
     __tablename__ = 'shapes'
@@ -377,7 +377,7 @@ class ShapeEntity(Base):
     """紐づく便"""
 
 
-class FeedInfoEntity(Base):
+class FeedInfoEntity(BASE):
     """提供情報
     主キーなしだがSQL Alchemyの動作仕様を満たす為 primary_key=True を全フィールドに付けています
     """
@@ -397,7 +397,7 @@ class FeedInfoEntity(Base):
     """提供データバージョン (ex: 20170401A0015)"""
 
 
-class TranslationEntity(Base):
+class TranslationEntity(BASE):
     """翻訳情報
     """
     __tablename__ = 'translations'

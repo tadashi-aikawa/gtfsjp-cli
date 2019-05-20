@@ -17,7 +17,7 @@ class Stop(OwlMixin):
 
 
 class GtfsClient:
-    def __init__(self, source: str):
+    def __init__(self):
         raise NotImplementedError()
 
     def drop_and_create(self, gtfs_dir: str, *, encoding: str = "utf_8_sig", drop_duplicates: bool = False):

@@ -11,10 +11,11 @@ from owlmixin import TList, TOption
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from gtfscli.client.gtfs import Agency, Stop, GtfsClient
+from gtfscli.client.gtfs import GtfsClient
+from gtfscli.client.gtfs import Agency, Stop
 from gtfscli.dao.agency import AgencyDao
 from gtfscli.dao.entities import (
-    Base, StopEntity, StopTimeEntity, AgencyEntity, AgencyJpEntity, CalendarEntity, RouteEntity, RouteJpEntity,
+    BASE, StopEntity, StopTimeEntity, AgencyEntity, AgencyJpEntity, CalendarEntity, RouteEntity, RouteJpEntity,
     TripEntity, OfficeJpEntity, FareRuleEntity, FareAttributeEntity, CalendarDateEntity, ShapeEntity, FeedInfoEntity,
     TranslationEntity
 )
@@ -174,13 +175,13 @@ class GtfsDbClient(GtfsClient):
         return to_agencies(self.agency.all())
 
     def __create_database_with_inserts(self, gtfs_dir: str, encoding: str, drop_duplicates: bool):
-        Base.metadata.create_all(self.engine)
+        BASE.metadata.create_all(self.engine)
         for e in [x for x in ENTITIES if os.path.exists(os.path.join(gtfs_dir, x["file"]))]:
             self.__insert_records(gtfs_dir, e["clz"], e["file"], encoding, drop_duplicates)
         self.session.commit()
 
     def __drop_database(self):
-        Base.metadata.drop_all(self.engine)
+        BASE.metadata.drop_all(self.engine)
 
     def __insert_records(self, gtfs_dir: str, clz, file_name: str, encoding: str, drop_duplicates: bool):
         spinner = Halo(text=f"{file_name:<20} -- Loading", spinner='dots', stream=sys.stderr)
