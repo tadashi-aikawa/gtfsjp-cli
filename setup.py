@@ -16,15 +16,16 @@ test_requirements = convert_deps_to_pip(pfile['dev-packages'], r=False)
 
 
 def load_readme():
-    with open(os.path.join(here, 'README.md')) as f:
+    with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
         return f.read()
 
 
 setup(
     name='gtfscli',
     version=re.search(
-        r'__version__\s*=\s*[\'"]([^\'"]*)[\'"]',  # It excludes inline comment too
-        open('gtfscli/main.py').read()).group(1),
+        r'__version__\s*=\s*[\'"]([^\'"]*)[\'"]',    # It excludes inline comment too
+        open('gtfscli/main.py').read()
+    ).group(1),
     description='TODO: description',
     long_description=load_readme(),
     long_description_content_type='text/markdown',
@@ -36,9 +37,7 @@ setup(
     install_requires=requirements,
     extras_require={'test': test_requirements},
     entry_points={
-        'console_scripts': [
-            'gtfscli = gtfscli.main:main'
-        ],
+        'console_scripts': ['gtfs = gtfscli.main:main'],
     },
     classifiers=[
         'Programming Language :: Python',

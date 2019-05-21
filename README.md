@@ -10,10 +10,10 @@
 
 ```
 # データソース作成
-$ python gtfscli\main.py init db <gtfs_dir_path>
+$ gtfs init db <gtfs_dir_path>
 
 # 停留所/標柱情報取得コマンドのヘルプ表示
-$ python gtfscli\main.py get stop -h
+$ gtfs get stop -h
 Get data related to stops
 
 Usage:
@@ -28,7 +28,7 @@ Options:
   -h --help                         Show this screen.
 
 # 東京駅に部分一致するものを取得
-$ python gtfscli\main.py get stop -w 東京
+$ gtfs get stop -w 東京
 ...
 ```
 
