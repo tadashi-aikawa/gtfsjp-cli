@@ -6,9 +6,9 @@
 
 [GTFS-JP]: https://www.gtfs.jp/developpers-guide/format-reference.html
 
-## インストール -> 実行 DEMO
+## デモ
 
-<video controls src="https://dl.dropboxusercontent.com/s/zqtw0tzshfp1c9l/demo.mp4" type="video/mp4"></video>
+[インストールから実行までのデモ動画](https://dl.dropboxusercontent.com/s/zqtw0tzshfp1c9l/demo.mp4) をご覧下さい
 
 ## インストール方法
 
