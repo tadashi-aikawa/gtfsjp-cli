@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "66b1f7440e8869475f61d8e569b646b47170c78ccc1ae02457fa8ccb2479d355"
+            "sha256": "7ec217af3d95bd3b7fc0e47f01fdd175141909d74bb5c89dba924994afb74f43"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -67,16 +67,16 @@
         },
         "owcli": {
             "hashes": [
-                "sha256:c9d6fb6f578991642e695ab53214ec4619474cb4e440689e481ca7eb83fbc00b"
+                "sha256:f0dff5cbb6df68c509ea415c8758ff20b072fb2edca9330606f537e71434bac1"
             ],
             "index": "pypi",
-            "version": "==0.4.1"
+            "version": "==0.4.2"
         },
         "owlmixin": {
             "hashes": [
-                "sha256:1a669c4f1971b9059f328efc0248820ab30ffd620281a8d62634d7ba4fca2677"
+                "sha256:c0630cc975201e7309045bcb3de64eed1956a1f85df00fdb877f7ad10ef0d928"
             ],
-            "version": "==3.1.0"
+            "version": "==3.1.1"
         },
         "pbr": {
             "hashes": [
@@ -151,10 +151,10 @@
         },
         "isort": {
             "hashes": [
-                "sha256:49293e2ff590cc8d48bc1f51970548b5b102bf038439ca1af77f352164725628",
-                "sha256:ba69a4be8474be11720636bc2f0cf66f7054d417d4c1dbc1dfe504bb8e739541"
+                "sha256:c40744b6bc5162bbb39c1257fe298b7a393861d50978b565f3ccd9cb9de0182a",
+                "sha256:f57abacd059dc3bd666258d1efb0377510a89777fda3e3274e3c01f7c03ae22d"
             ],
-            "version": "==4.3.19"
+            "version": "==4.3.20"
         },
         "lazy-object-proxy": {
             "hashes": [

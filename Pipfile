@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 sqlalchemy = "*"
 halo = "*"
-owcli = "*"
+owcli = ">=0.4.2"
 
 [dev-packages]
 pylint = "*"
