@@ -6,32 +6,25 @@
 
 [GTFS-JP]: https://www.gtfs.jp/developpers-guide/format-reference.html
 
-実行例
+## インストール -> 実行 DEMO
+
+<video controls src="https://dl.dropboxusercontent.com/s/zqtw0tzshfp1c9l/demo.mp4" type="video/mp4"></video>
+
+## インストール方法
+
+### 前提条件
+
+以下がインストールされていること。
+
+* Python3.6以上
+* pip
+* [pipenv](https://pypi.org/project/pipenv/)
+
+### インストール
 
 ```
-# データソース作成
-$ gtfs init db <gtfs_dir_path>
-
-# 停留所/標柱情報取得コマンドのヘルプ表示
-$ gtfs get stop -h
-Get data related to stops
-
-Usage:
-  gtfscli get stop --id <id> <dir>
-  gtfscli get stop (-w <word> | --word <word>) <dir>
-  gtfscli get stop (-h | --help)
-
-Options:
-  --id <id>                         Stop id
-  -w, --word <word>                 Search word for stop name
-  <dir>                             GTFS dir
-  -h --help                         Show this screen.
-
-# 東京駅に部分一致するものを取得
-$ gtfs get stop -w 東京
-...
+$ pip install git+https://github.com/tadashi-aikawa/gtfs-cli.git
 ```
-
 
 ## 開発者向け
 
