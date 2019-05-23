@@ -3,16 +3,16 @@
 import csv
 import json
 import os
+import sys
 from typing import List, Optional, Iterable
 
-import sys
 from halo import Halo
 from owlmixin import TList, TOption
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from gtfscli.client.gtfs import GtfsClient
 from gtfscli.client.gtfs import Agency, Stop
+from gtfscli.client.gtfs import GtfsClient
 from gtfscli.dao.agency import AgencyDao
 from gtfscli.dao.entities import (
     BASE, StopEntity, StopTimeEntity, AgencyEntity, AgencyJpEntity, CalendarEntity, RouteEntity, RouteJpEntity,
@@ -87,31 +87,6 @@ ENTITIES = [
 ]
 
 
-def to_agency(record: AgencyEntity) -> 'Agency':
-    return Agency.from_dict({
-        "id": record.agency_id,
-        "name": record.agency_name,
-        "zip_number": record.jp.agency_zip_number if record.jp else None,
-        "president_name": record.jp.agency_president_name if record.jp else None,
-    })
-
-
-def to_agencies(records: Iterable[AgencyEntity]) -> 'TList[Agency]':
-    return TList(records).map(to_agency)
-
-
-def to_stop(record: StopEntity) -> 'Stop':
-    return Stop.from_dict({
-        "id": record.stop_id,
-        "name": record.stop_name,
-        "trip_ids": list(set([x.trip_id for x in record.stop_times]))
-    })
-
-
-def to_stops(records: Iterable[StopEntity]) -> 'TList[Stop]':
-    return TList(records).map(to_stop)
-
-
 def load_csvf(fpath: str, fieldnames: Optional[List[str]], encoding: str = "utf-8",
               drop_duplicates: bool = False) -> Iterable[dict]:
     """CSVファイルを読み込みます
@@ -140,6 +115,31 @@ def load_csvf(fpath: str, fieldnames: Optional[List[str]], encoding: str = "utf-
                     continue
                 yield current
                 previous = current
+
+
+def to_agency(record: AgencyEntity) -> 'Agency':
+    return Agency.from_dict({
+        "id": record.agency_id,
+        "name": record.agency_name,
+        "zip_number": record.jp.agency_zip_number if record.jp else None,
+        "president_name": record.jp.agency_president_name if record.jp else None,
+    })
+
+
+def to_agencies(records: Iterable[AgencyEntity]) -> 'TList[Agency]':
+    return TList(records).map(to_agency)
+
+
+def to_stop(record: StopEntity) -> 'Stop':
+    return Stop.from_dict({
+        "id": record.stop_id,
+        "name": record.stop_name,
+        "trip_ids": list(set([x.trip_id for x in record.stop_times]))
+    })
+
+
+def to_stops(records: Iterable[StopEntity]) -> 'TList[Stop]':
+    return TList(records).map(to_stop)
 
 
 class GtfsDbClient(GtfsClient):
@@ -183,6 +183,7 @@ class GtfsDbClient(GtfsClient):
     def __drop_database(self):
         BASE.metadata.drop_all(self.engine)
 
+    # pylint: disable=too-many-arguments
     def __insert_records(self, gtfs_dir: str, clz, file_name: str, encoding: str, drop_duplicates: bool):
         spinner = Halo(text=f"{file_name:<20} -- Loading", spinner='dots', stream=sys.stderr)
 
