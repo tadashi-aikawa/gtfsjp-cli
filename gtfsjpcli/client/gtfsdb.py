@@ -11,17 +11,17 @@ from owlmixin import TList, TOption
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from gtfscli.client.gtfs import Agency, Stop
-from gtfscli.client.gtfs import GtfsClient
-from gtfscli.dao.agency import AgencyDao
-from gtfscli.dao.entities import (
+from gtfsjpcli.client.gtfs import Agency, Stop
+from gtfsjpcli.client.gtfs import GtfsClient
+from gtfsjpcli.dao.agency import AgencyDao
+from gtfsjpcli.dao.entities import (
     BASE, StopEntity, StopTimeEntity, AgencyEntity, AgencyJpEntity, CalendarEntity, RouteEntity, RouteJpEntity,
     TripEntity, OfficeJpEntity, FareRuleEntity, FareAttributeEntity, CalendarDateEntity, ShapeEntity, FeedInfoEntity,
     TranslationEntity
 )
-from gtfscli.dao.route import RouteDao
-from gtfscli.dao.stop import StopDao
-from gtfscli.dao.trip import TripDao
+from gtfsjpcli.dao.route import RouteDao
+from gtfsjpcli.dao.stop import StopDao
+from gtfsjpcli.dao.trip import TripDao
 
 ENTITIES = [
     {

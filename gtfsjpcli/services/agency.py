@@ -1,7 +1,7 @@
 from owlmixin import OwlMixin, TList
 
-from gtfscli.client.factory import create_gtfs_client
-from gtfscli.client.gtfs import Agency
+from gtfsjpcli.client.factory import create_gtfs_client
+from gtfsjpcli.client.gtfs import Agency
 
 
 class AgencyDocument(OwlMixin):

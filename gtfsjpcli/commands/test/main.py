@@ -13,8 +13,8 @@ Examples:
 
 from owlmixin import OwlMixin, TList
 
-from gtfscli.client.gtfsdb import GtfsDbClient
-from gtfscli.dao.entities import FareRuleEntity
+from gtfsjpcli.client.gtfsdb import GtfsDbClient
+from gtfsjpcli.dao.entities import FareRuleEntity
 
 
 class Args(OwlMixin):

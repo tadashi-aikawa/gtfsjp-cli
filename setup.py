@@ -21,10 +21,10 @@ def load_readme():
 
 
 setup(
-    name='gtfscli',
+    name='gtfsjp-cli',
     version=re.search(
         r'__version__\s*=\s*[\'"]([^\'"]*)[\'"]',    # It excludes inline comment too
-        open('gtfscli/main.py').read()
+        open('gtfsjpcli/main.py').read()
     ).group(1),
     description='TODO: description',
     long_description=load_readme(),
@@ -37,7 +37,7 @@ setup(
     install_requires=requirements,
     extras_require={'test': test_requirements},
     entry_points={
-        'console_scripts': ['gtfs = gtfscli.main:main'],
+        'console_scripts': ['gtfsjp = gtfsjpcli.main:main'],
     },
     classifiers=[
         'Programming Language :: Python',

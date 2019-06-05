@@ -4,7 +4,7 @@ from typing import Iterable, Optional
 
 from sqlalchemy.orm import Session
 
-from gtfscli.dao.entities import StopEntity
+from gtfsjpcli.dao.entities import StopEntity
 
 
 class StopDao():

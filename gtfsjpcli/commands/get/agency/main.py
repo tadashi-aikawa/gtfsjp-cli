@@ -13,7 +13,7 @@ Examples:
 """
 from owlmixin import OwlMixin
 
-from gtfscli.services.agency import fetch_agencies
+from gtfsjpcli.services.agency import fetch_agencies
 
 
 class Args(OwlMixin):

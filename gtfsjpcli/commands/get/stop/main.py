@@ -17,7 +17,7 @@ Examples:
 """
 from owlmixin import OwlMixin, TOption
 
-from gtfscli.services.stop import search_by_word, search_by_id
+from gtfsjpcli.services.stop import search_by_word, search_by_id
 
 
 class Args(OwlMixin):

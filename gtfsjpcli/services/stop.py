@@ -1,7 +1,7 @@
 from owlmixin import OwlMixin, TList
 
-from gtfscli.client.factory import create_gtfs_client
-from gtfscli.client.gtfs import Stop
+from gtfsjpcli.client.factory import create_gtfs_client
+from gtfsjpcli.client.gtfs import Stop
 
 
 class StopDocument(OwlMixin):

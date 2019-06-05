@@ -1,4 +1,4 @@
-# gtfscli
+# gtfsjp-cli
 
 **⚠ 本プロジェクトはお試し版であり、開発中です**
 
@@ -23,7 +23,7 @@
 ### インストール
 
 ```
-$ pip install git+https://github.com/tadashi-aikawa/gtfs-cli.git
+$ pip install git+https://github.com/tadashi-aikawa/gtfsjp-cli.git
 ```
 
 ## 開発者向け

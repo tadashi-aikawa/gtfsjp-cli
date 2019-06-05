@@ -4,7 +4,7 @@ from typing import Iterable, Optional
 
 from sqlalchemy.orm import Session
 
-from gtfscli.dao.entities import RouteEntity
+from gtfsjpcli.dao.entities import RouteEntity
 
 
 class RouteDao():

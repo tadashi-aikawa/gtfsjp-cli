@@ -4,7 +4,7 @@ from typing import Iterable
 
 from sqlalchemy.orm import Session
 
-from gtfscli.dao.entities import AgencyEntity
+from gtfsjpcli.dao.entities import AgencyEntity
 
 
 class AgencyDao():

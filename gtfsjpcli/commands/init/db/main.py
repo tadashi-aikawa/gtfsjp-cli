@@ -16,7 +16,7 @@ Examples:
 """
 from owlmixin import OwlMixin
 
-from gtfscli.client.gtfsdb import GtfsDbClient
+from gtfsjpcli.client.gtfsdb import GtfsDbClient
 
 
 class Args(OwlMixin):
