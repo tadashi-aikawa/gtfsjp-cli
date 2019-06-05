@@ -10,8 +10,10 @@ owcli = ">=0.4.2"
 
 [dev-packages]
 pylint = "*"
-yapf = "*"
-rope = "*"
+black = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
