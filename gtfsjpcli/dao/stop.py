@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from gtfsjpcli.dao.entities import StopEntity
 
 
-class StopDao():
+class StopDao:
     session: Session
 
     def __init__(self, session: Session):

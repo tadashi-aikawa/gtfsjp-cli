@@ -7,7 +7,7 @@ import sys
 from typing import List, Optional, Iterable
 
 from halo import Halo
-from owlmixin import TList, TOption
+from owlmixin import TList, TOption, TIterator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -15,80 +15,52 @@ from gtfsjpcli.client.gtfs import Agency, Stop
 from gtfsjpcli.client.gtfs import GtfsClient
 from gtfsjpcli.dao.agency import AgencyDao
 from gtfsjpcli.dao.entities import (
-    BASE, StopEntity, StopTimeEntity, AgencyEntity, AgencyJpEntity, CalendarEntity, RouteEntity, RouteJpEntity,
-    TripEntity, OfficeJpEntity, FareRuleEntity, FareAttributeEntity, CalendarDateEntity, ShapeEntity, FeedInfoEntity,
-    TranslationEntity
+    BASE,
+    StopEntity,
+    StopTimeEntity,
+    AgencyEntity,
+    AgencyJpEntity,
+    CalendarEntity,
+    RouteEntity,
+    RouteJpEntity,
+    TripEntity,
+    OfficeJpEntity,
+    FareRuleEntity,
+    FareAttributeEntity,
+    CalendarDateEntity,
+    ShapeEntity,
+    FeedInfoEntity,
+    TranslationEntity,
 )
 from gtfsjpcli.dao.route import RouteDao
 from gtfsjpcli.dao.stop import StopDao
 from gtfsjpcli.dao.trip import TripDao
 
 ENTITIES = [
-    {
-        "file": "agency.txt",
-        "clz": AgencyEntity
-    },
-    {
-        "file": "agency_jp.txt",
-        "clz": AgencyJpEntity
-    },
-    {
-        "file": "routes.txt",
-        "clz": RouteEntity
-    },
-    {
-        "file": "routes_jp.txt",
-        "clz": RouteJpEntity
-    },
-    {
-        "file": "trips.txt",
-        "clz": TripEntity
-    },
-    {
-        "file": "office_jp.txt",
-        "clz": OfficeJpEntity
-    },
-    {
-        "file": "stops.txt",
-        "clz": StopEntity
-    },
-    {
-        "file": "stop_times.txt",
-        "clz": StopTimeEntity
-    },
-    {
-        "file": "calendar.txt",
-        "clz": CalendarEntity
-    },
-    {
-        "file": "calendar_dates.txt",
-        "clz": CalendarDateEntity
-    },
-    {
-        "file": "fare_attributes.txt",
-        "clz": FareAttributeEntity
-    },
-    {
-        "file": "fare_rules.txt",
-        "clz": FareRuleEntity
-    },
-    {
-        "file": "shapes.txt",
-        "clz": ShapeEntity
-    },
-    {
-        "file": "feed_info.txt",
-        "clz": FeedInfoEntity
-    },
-    {
-        "file": "translations.txt",
-        "clz": TranslationEntity
-    },
+    {"file": "agency.txt", "clz": AgencyEntity},
+    {"file": "agency_jp.txt", "clz": AgencyJpEntity},
+    {"file": "routes.txt", "clz": RouteEntity},
+    {"file": "routes_jp.txt", "clz": RouteJpEntity},
+    {"file": "trips.txt", "clz": TripEntity},
+    {"file": "office_jp.txt", "clz": OfficeJpEntity},
+    {"file": "stops.txt", "clz": StopEntity},
+    {"file": "stop_times.txt", "clz": StopTimeEntity},
+    {"file": "calendar.txt", "clz": CalendarEntity},
+    {"file": "calendar_dates.txt", "clz": CalendarDateEntity},
+    {"file": "fare_attributes.txt", "clz": FareAttributeEntity},
+    {"file": "fare_rules.txt", "clz": FareRuleEntity},
+    {"file": "shapes.txt", "clz": ShapeEntity},
+    {"file": "feed_info.txt", "clz": FeedInfoEntity},
+    {"file": "translations.txt", "clz": TranslationEntity},
 ]
 
 
-def load_csvf(fpath: str, fieldnames: Optional[List[str]], encoding: str = "utf-8",
-              drop_duplicates: bool = False) -> Iterable[dict]:
+def load_csvf(
+    fpath: str,
+    fieldnames: Optional[List[str]],
+    encoding: str = "utf-8",
+    drop_duplicates: bool = False,
+) -> Iterable[dict]:
     """CSVファイルを読み込みます
 
     Args:
@@ -97,7 +69,7 @@ def load_csvf(fpath: str, fieldnames: Optional[List[str]], encoding: str = "utf-
         encoding: エンコーディング
         drop_duplicates: 完全重複するレコードを削除するかどうか
     """
-    with open(fpath, mode='r', encoding=encoding) as f:
+    with open(fpath, mode="r", encoding=encoding) as f:
         snippet = f.read(8192)
         f.seek(0)
 
@@ -117,29 +89,33 @@ def load_csvf(fpath: str, fieldnames: Optional[List[str]], encoding: str = "utf-
                 previous = current
 
 
-def to_agency(record: AgencyEntity) -> 'Agency':
-    return Agency.from_dict({
-        "id": record.agency_id,
-        "name": record.agency_name,
-        "zip_number": record.jp.agency_zip_number if record.jp else None,
-        "president_name": record.jp.agency_president_name if record.jp else None,
-    })
+def to_agency(record: AgencyEntity) -> "Agency":
+    return Agency.from_dict(
+        {
+            "id": record.agency_id,
+            "name": record.agency_name,
+            "zip_number": record.jp.agency_zip_number if record.jp else None,
+            "president_name": record.jp.agency_president_name if record.jp else None,
+        }
+    )
 
 
-def to_agencies(records: Iterable[AgencyEntity]) -> 'TList[Agency]':
+def to_agencies(records: Iterable[AgencyEntity]) -> "TList[Agency]":
     return TList(records).map(to_agency)
 
 
-def to_stop(record: StopEntity) -> 'Stop':
-    return Stop.from_dict({
-        "id": record.stop_id,
-        "name": record.stop_name,
-        "trip_ids": list(set([x.trip_id for x in record.stop_times]))
-    })
+def to_stop(record: StopEntity) -> "Stop":
+    return Stop.from_dict(
+        {
+            "id": record.stop_id,
+            "name": record.stop_name,
+            "trip_ids": TIterator(record.stop_times).map(lambda x: x.trip_id).uniq().to_list(),
+        }
+    )
 
 
-def to_stops(records: Iterable[StopEntity]) -> 'TList[Stop]':
-    return TList(records).map(to_stop)
+def to_stops(records: Iterable[StopEntity]) -> "TIterator[Stop]":
+    return TIterator(records).map(to_stop)
 
 
 class GtfsDbClient(GtfsClient):
@@ -152,8 +128,8 @@ class GtfsDbClient(GtfsClient):
     trip: TripDao
 
     def __init__(self, source: str = "gtfs-jp.sqlite3"):
-        connection_string = source or ':memory:'
-        self.engine = create_engine(f'sqlite:///{connection_string}', echo=False)
+        connection_string = source or ":memory:"
+        self.engine = create_engine(f"sqlite:///{connection_string}", echo=False)
         self.session: Session = sessionmaker(bind=self.engine)()
 
         self.agency = AgencyDao(self.session)
@@ -161,14 +137,16 @@ class GtfsDbClient(GtfsClient):
         self.stop = StopDao(self.session)
         self.trip = TripDao(self.session)
 
-    def drop_and_create(self, gtfs_dir: str, *, encoding: str = "utf_8_sig", drop_duplicates: bool = False):
+    def drop_and_create(
+        self, gtfs_dir: str, *, encoding: str = "utf_8_sig", drop_duplicates: bool = False
+    ):
         self.__drop_database()
         self.__create_database_with_inserts(gtfs_dir, encoding, drop_duplicates)
 
     def find_stop_by_id(self, id_: str) -> TOption[Stop]:
         return TOption(self.stop.find_by_id(id_)).map(to_stop)
 
-    def search_stops_by_name(self, name: str) -> TList[Stop]:
+    def search_stops_by_name(self, name: str) -> TIterator[Stop]:
         return to_stops(self.stop.search_by_name(name))
 
     def fetch_agencies(self) -> TList[Agency]:
@@ -184,13 +162,18 @@ class GtfsDbClient(GtfsClient):
         BASE.metadata.drop_all(self.engine)
 
     # pylint: disable=too-many-arguments
-    def __insert_records(self, gtfs_dir: str, clz, file_name: str, encoding: str, drop_duplicates: bool):
-        spinner = Halo(text=f"{file_name:<20} -- Loading", spinner='dots', stream=sys.stderr)
+    def __insert_records(
+        self, gtfs_dir: str, clz, file_name: str, encoding: str, drop_duplicates: bool
+    ):
+        spinner = Halo(text=f"{file_name:<20} -- Loading", spinner="dots", stream=sys.stderr)
 
         spinner.start()
         dicts = list(
             load_csvf(
-                os.path.join(gtfs_dir, file_name), fieldnames=None, encoding=encoding, drop_duplicates=drop_duplicates
+                os.path.join(gtfs_dir, file_name),
+                fieldnames=None,
+                encoding=encoding,
+                drop_duplicates=drop_duplicates,
             )
         )
         spinner.stop()
