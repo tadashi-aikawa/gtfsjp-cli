@@ -13,6 +13,8 @@ class Agency(OwlMixin):
 class Stop(OwlMixin):
     id: str
     name: str
+    kana: str
+    en_name: TOption[str]
     trip_ids: TOption[TList[str]]
 
 

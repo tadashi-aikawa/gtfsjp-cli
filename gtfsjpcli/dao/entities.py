@@ -86,8 +86,8 @@ class StopEntity(BASE):
     """停留所・標柱ID (ex: [停]100 [柱]100_10)"""
     stop_code: Optional[str] = Column(String)
     """停留所・標柱番号 - ナンバリングなどの番号"""
-    stop_name: str = Column(String, nullable=False)
-    """停留所・標柱名称 (ex: [停]東京駅八重洲口 [柱]東京駅八重洲口)"""
+    stop_name: str = Column(String, ForeignKey("translations.trans_id"), nullable=False)
+    """停留所・標柱名称. ⚠表示名称はtranslationsを使用するのでその為のキー (ex: [停]東京駅八重洲口 [柱]東京駅八重洲口)"""
     stop_desc: Optional[str] = Column(String)
     """停留所・標柱付加情報 (最寄り施設情報など)"""
     stop_lat: str = Column(String, nullable=False)
@@ -113,6 +113,27 @@ class StopEntity(BASE):
         "StopTimeEntity", uselist=True, back_populates="stop"
     )
     """紐づく通過時刻情報"""
+    translation_ja: "TranslationEntity" = relationship(
+        "TranslationEntity",
+        uselist=False,
+        primaryjoin="and_(StopEntity.stop_name==TranslationEntity.trans_id,"
+        "TranslationEntity.lang=='ja')",
+    )
+    """日本語の翻訳情報"""
+    translation_kana: "TranslationEntity" = relationship(
+        "TranslationEntity",
+        uselist=False,
+        primaryjoin="and_(StopEntity.stop_name==TranslationEntity.trans_id,"
+        "TranslationEntity.lang=='ja-Hrkt')",
+    )
+    """読み仮名の翻訳情報"""
+    translation_en: Optional["TranslationEntity"] = relationship(
+        "TranslationEntity",
+        uselist=False,
+        primaryjoin="and_(StopEntity.stop_name==TranslationEntity.trans_id,"
+        "TranslationEntity.lang=='en')",
+    )
+    """英語の翻訳情報"""
 
 
 class RouteEntity(BASE):
@@ -452,6 +473,6 @@ class TranslationEntity(BASE):
     trans_id: str = Column(String, primary_key=True)
     """翻訳元日本語 - name/desc/headsign/urlで終わるフィールドが対象 (ex: 数寄屋橋)"""
     lang: str = Column(String, primary_key=True)
-    """言語 - 読み仮名である『ja-Hrkt』は必須 (ex: en)"""
+    """言語 - 日本語『ja』、読み仮名である『ja-Hrkt』は必須 (ex: en)"""
     translation: str = Column(String, nullable=False)
     """翻訳先言語 (ex: すきやばし)"""

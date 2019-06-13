@@ -108,7 +108,9 @@ def to_stop(record: StopEntity, with_trips: bool) -> "Stop":
     return Stop.from_dict(
         {
             "id": record.stop_id,
-            "name": record.stop_name,
+            "name": record.translation_ja.translation,
+            "kana": record.translation_kana.translation,
+            "en_name": record.translation_en.translation,
             "trip_ids": TIterator(record.stop_times).map(lambda x: x.trip_id).uniq().to_list()
             if with_trips
             else None,
