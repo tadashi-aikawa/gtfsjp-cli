@@ -20,7 +20,8 @@ BASE = declarative_base()
 class AgencyEntity(BASE):
     """事業者情報
     """
-    __tablename__ = 'agency'
+
+    __tablename__ = "agency"
 
     agency_id: str = Column(String, primary_key=True)
     """事業者ID (ex: 8000020130001)"""
@@ -39,16 +40,21 @@ class AgencyEntity(BASE):
     agency_email: Optional[str] = Column(String)
     """事業者Eメール"""
 
-    jp: Optional['AgencyJpEntity'] = relationship("AgencyJpEntity", uselist=False, back_populates="origin")
+    jp: Optional["AgencyJpEntity"] = relationship(
+        "AgencyJpEntity", uselist=False, back_populates="origin"
+    )
     """日本特有の追加情報"""
-    routes: Iterable["RouteEntity"] = relationship("RouteEntity", uselist=True, back_populates="agency")
+    routes: Iterable["RouteEntity"] = relationship(
+        "RouteEntity", uselist=True, back_populates="agency"
+    )
     """紐づく事業者追加情報"""
 
 
 class AgencyJpEntity(BASE):
     """事業者追加情報
     """
-    __tablename__ = 'agency_jp'
+
+    __tablename__ = "agency_jp"
 
     # XXX: primary keyではないけどORMはprimary keyナシを認めないので追加. 後で定義が変わる可能性は高い
     agency_id: str = Column(String, ForeignKey("agency.agency_id"), primary_key=True)
@@ -64,14 +70,17 @@ class AgencyJpEntity(BASE):
     agency_president_name: Optional[str] = Column(String)
     """代表者氏名 (ex: 東京　太郎)"""
 
-    origin: Iterable[AgencyEntity] = relationship("AgencyEntity", uselist=False, back_populates="jp")
+    origin: Iterable[AgencyEntity] = relationship(
+        "AgencyEntity", uselist=False, back_populates="jp"
+    )
     """事業者情報"""
 
 
 class StopEntity(BASE):
     """停留所/標柱
     """
-    __tablename__ = 'stops'
+
+    __tablename__ = "stops"
 
     stop_id: str = Column(String, primary_key=True)
     """停留所・標柱ID (ex: [停]100 [柱]100_10)"""
@@ -85,29 +94,32 @@ class StopEntity(BASE):
     """緯度 - Degree/世界測地系 (ex: [停]ターミナル中心 [柱]標柱位置)"""
     stop_lon: str = Column(String, nullable=False)
     """経度 - Degree/世界測地系 (ex: [停]ターミナル中心 [柱]標柱位置)"""
-    zone_id: Optional[str] = Column(String)    # 運賃エリアID (標柱のみ)
+    zone_id: Optional[str] = Column(String)  # 運賃エリアID (標柱のみ)
     """運賃エリアID - 対キロ制の場合は標柱IDを設定? (ex: [停]なし [柱]Z_210)"""
     stop_url: Optional[str] = Column(String)
     """停留所・標柱URL - 時刻表やバスロケの案内先"""
     location_type: Optional[int] = Column(Integer)
     """停留所・標柱区分 - 0:標柱 1:停留所"""
-    parent_station: Optional[str] = Column(String)    # 親駅情報 (標柱のみ)
+    parent_station: Optional[str] = Column(String)  # 親駅情報 (標柱のみ)
     """親駅情報 - 標柱の場合に停留所のstop_idを指定できる (ex: [停]なし [柱]100)"""
     stop_timezone: Optional[str] = Column(String)
     """タイムゾーン - 日本では設定不要"""
     wheelchair_boarding: Optional[int] = Column(Integer)
     """車イス情報 - 設定非推奨"""
-    platform_code: Optional[str] = Column(String)    # のりば情報(ID) (標柱のみ)
+    platform_code: Optional[str] = Column(String)  # のりば情報(ID) (標柱のみ)
     """のりば情報 - 『番』『のりば』などの語句は含めない (ex: [停]なし [柱]G,3,センタービル前)"""
 
-    stop_times: Iterable['StopTimeEntity'] = relationship("StopTimeEntity", uselist=True, back_populates="stop")
+    stop_times: Iterable["StopTimeEntity"] = relationship(
+        "StopTimeEntity", uselist=True, back_populates="stop"
+    )
     """紐づく通過時刻情報"""
 
 
 class RouteEntity(BASE):
     """経路情報
     """
-    __tablename__ = 'routes'
+
+    __tablename__ = "routes"
 
     route_id: str = Column(String, primary_key=True)
     """経路ID (ex: 1001)"""
@@ -132,11 +144,15 @@ class RouteEntity(BASE):
 
     agency: AgencyEntity = relationship("AgencyEntity", uselist=False, back_populates="routes")
     """事業者"""
-    jp: Optional['RouteJpEntity'] = relationship("RouteJpEntity", uselist=False, back_populates="origin")
+    jp: Optional["RouteJpEntity"] = relationship(
+        "RouteJpEntity", uselist=False, back_populates="origin"
+    )
     """日本特有の経路追加情報"""
-    trips: Iterable['TripEntity'] = relationship("TripEntity", uselist=True, back_populates="route")
+    trips: Iterable["TripEntity"] = relationship("TripEntity", uselist=True, back_populates="route")
     """便一覧"""
-    fare_rules: Iterable['FareRuleEntity'] = relationship("FareRuleEntity", uselist=True, back_populates="route")
+    fare_rules: Iterable["FareRuleEntity"] = relationship(
+        "FareRuleEntity", uselist=True, back_populates="route"
+    )
     """運賃定義情報一覧"""
 
 
@@ -144,7 +160,8 @@ class RouteJpEntity(BASE):
     """経路追加情報
     主キーなしだがSQL Alchemyの動作仕様を満たす為 primary_key=True を全フィールドに付けています
     """
-    __tablename__ = 'routes_jp'
+
+    __tablename__ = "routes_jp"
 
     route_id: str = Column(String, ForeignKey("routes.route_id"), primary_key=True)
     """経路ID (ex: 1000)"""
@@ -164,11 +181,12 @@ class RouteJpEntity(BASE):
 class TripEntity(BASE):
     """便情報
     """
-    __tablename__ = 'trips'
 
-    route_id: str = Column(String, ForeignKey('routes.route_id'), nullable=False)
+    __tablename__ = "trips"
+
+    route_id: str = Column(String, ForeignKey("routes.route_id"), nullable=False)
     """経路ID (ex: 1000)"""
-    service_id: str = Column(String, ForeignKey('calendar.service_id'), nullable=False)
+    service_id: str = Column(String, ForeignKey("calendar.service_id"), nullable=False)
     """運行ID - ??? (ex: 平日（月～金）)"""
     trip_id: str = Column(String, primary_key=True)
     """便ID (ex: 1001WD001)"""
@@ -195,20 +213,33 @@ class TripEntity(BASE):
 
     route: RouteEntity = relationship("RouteEntity", uselist=True, back_populates="trips")
     """便の紐づく経路"""
-    office: Optional['OfficeJpEntity'] = relationship("OfficeJpEntity", uselist=False, back_populates="trips")
+    office: Optional["OfficeJpEntity"] = relationship(
+        "OfficeJpEntity", uselist=False, back_populates="trips"
+    )
     """便に紐づく営業所"""
-    stop_times: Iterable['StopTimeEntity'] = relationship("StopTimeEntity", uselist=True, back_populates="trip")
+    stop_times: Iterable["StopTimeEntity"] = relationship(
+        "StopTimeEntity", uselist=True, back_populates="trip"
+    )
     """便に紐づく停車時刻情報"""
-    shapes: Iterable['ShapeEntity'] = relationship("ShapeEntity", uselist=True, back_populates="trip")
+    shapes: Iterable["ShapeEntity"] = relationship(
+        "ShapeEntity", uselist=True, back_populates="trip"
+    )
     """便に紐づく描画情報"""
-    calendar: 'CalendarEntity' = relationship("CalendarEntity", uselist=False, back_populates="trips")
+    calendar: "CalendarEntity" = relationship(
+        "CalendarEntity", uselist=False, back_populates="trips"
+    )
     """便に紐づく運行区分情報"""
+    calendar_dates: "CalendarDateEntity" = relationship(
+        "CalendarDateEntity", uselist=True, back_populates="trip"
+    )
+    """便に紐づく運行日情報"""
 
 
 class OfficeJpEntity(BASE):
     """営業所
     """
-    __tablename__ = 'office_jp'
+
+    __tablename__ = "office_jp"
 
     office_id: str = Column(String, primary_key=True)
     """営業所ID (ex: S)"""
@@ -226,7 +257,8 @@ class OfficeJpEntity(BASE):
 class StopTimeEntity(BASE):
     """通過時刻情報
     """
-    __tablename__ = 'stop_times'
+
+    __tablename__ = "stop_times"
 
     trip_id: str = Column(String, ForeignKey("trips.trip_id"), primary_key=True)
     """便ID (ex: 1001WD001)"""
@@ -258,7 +290,8 @@ class StopTimeEntity(BASE):
 class CalendarEntity(BASE):
     """運行区分情報
     """
-    __tablename__ = 'calendar'
+
+    __tablename__ = "calendar"
 
     service_id: str = Column(String, primary_key=True)
     """運行ID - ??? (ex: 平日（月～金）)"""
@@ -281,32 +314,34 @@ class CalendarEntity(BASE):
     end_date: str = Column(String, nullable=False)
     """サービス終了日 - YYYYMMDD形式 (ex: 20171231)"""
 
-    dates: 'Iterable[CalendarDateEntity]' = relationship("CalendarDateEntity", uselist=True, back_populates="calendar")
-    """紐づく運行日情報一覧"""
-    trips: 'Iterable[TripEntity]' = relationship("TripEntity", uselist=True, back_populates="calendar")
+    trips: "Iterable[TripEntity]" = relationship(
+        "TripEntity", uselist=True, back_populates="calendar"
+    )
     """紐づく便一覧"""
 
 
 class CalendarDateEntity(BASE):
     """運行日情報
     """
-    __tablename__ = 'calendar_dates'
 
-    service_id: str = Column(String, ForeignKey('calendar.service_id'), primary_key=True)
+    __tablename__ = "calendar_dates"
+
+    service_id: str = Column(String, ForeignKey("trips.service_id"), primary_key=True)
     """運行ID - ??? (ex: 平日（月～金）)"""
     date: str = Column(String, primary_key=True)
     """日付 - YYYYMMDD形式 (ex: 20170503)"""
     exception_type: int = Column(Integer, nullable=False)
     """利用タイプ - 運行: 1 非運行: 2"""
 
-    calendar: CalendarEntity = relationship("CalendarEntity", uselist=False, back_populates="dates")
-    """紐づく運行情報"""
+    trip: TripEntity = relationship("TripEntity", uselist=False, back_populates="calendar_dates")
+    """この運行日情報を使用している便 (XXX: 本当は複数のtripsと紐づくが、簡略化のため単一のtripと紐づくようにしている)"""
 
 
 class FareAttributeEntity(BASE):
     """運賃属性情報
     """
-    __tablename__ = 'fare_attributes'
+
+    __tablename__ = "fare_attributes"
 
     fare_id: str = Column(String, primary_key=True)
     """運賃ID (ex: F_210)"""
@@ -321,7 +356,7 @@ class FareAttributeEntity(BASE):
     transfer_duration: Optional[int] = Column(Integer)
     """乗換有効期限 - 未指定と空白は等価"""
 
-    fare_rules: Iterable['FareRuleEntity'] = relationship(
+    fare_rules: Iterable["FareRuleEntity"] = relationship(
         "FareRuleEntity", uselist=True, back_populates="fare_attribute"
     )
     """紐づく運賃定義情報一覧。currency_typeがJPY固定であるため擬似的にone to manyとみなすことができる"""
@@ -330,15 +365,22 @@ class FareAttributeEntity(BASE):
 class FareRuleEntity(BASE):
     """運賃定義情報
     """
-    __tablename__ = 'fare_rules'
+
+    __tablename__ = "fare_rules"
 
     fare_id: str = Column(String, ForeignKey("fare_attributes.fare_id"), primary_key=True)
     """運賃ID (ex: F_210)"""
-    route_id: Optional[str] = Column(String, ForeignKey("routes.route_id"), primary_key=True, nullable=True)
+    route_id: Optional[str] = Column(
+        String, ForeignKey("routes.route_id"), primary_key=True, nullable=True
+    )
     """経路ID (ex: 1001)"""
-    origin_id: Optional[str] = Column(String, ForeignKey("stops.stop_id"), primary_key=True, nullable=True)
+    origin_id: Optional[str] = Column(
+        String, ForeignKey("stops.stop_id"), primary_key=True, nullable=True
+    )
     """乗車地ゾーン (ex: Z_210)"""
-    destination_id: Optional[str] = Column(String, ForeignKey("stops.stop_id"), primary_key=True, nullable=True)
+    destination_id: Optional[str] = Column(
+        String, ForeignKey("stops.stop_id"), primary_key=True, nullable=True
+    )
     """降車地ゾーン (ex: Z_210)"""
     contains_id: Optional[str] = Column(String)
     """通過ゾーン - 使用していないので不要"""
@@ -349,7 +391,9 @@ class FareRuleEntity(BASE):
         "FareAttributeEntity", uselist=False, back_populates="fare_rules"
     )
     """紐づく運賃属性情報。fare_attributes.currency_typeがJPY固定であるため擬似的にmany to oneとみなすことができる"""
-    origin_stop: StopEntity = relationship("StopEntity", primaryjoin="FareRuleEntity.origin_id==StopEntity.stop_id")
+    origin_stop: StopEntity = relationship(
+        "StopEntity", primaryjoin="FareRuleEntity.origin_id==StopEntity.stop_id"
+    )
     """乗車地の停留所/標柱"""
     destination_stop: StopEntity = relationship(
         "StopEntity", primaryjoin="FareRuleEntity.destination_id==StopEntity.stop_id"
@@ -360,7 +404,8 @@ class FareRuleEntity(BASE):
 class ShapeEntity(BASE):
     """描画情報
     """
-    __tablename__ = 'shapes'
+
+    __tablename__ = "shapes"
 
     shape_id: str = Column(String, ForeignKey("trips.shape_id"), primary_key=True)
     """描画ID (ex: S_1001)"""
@@ -381,7 +426,8 @@ class FeedInfoEntity(BASE):
     """提供情報
     主キーなしだがSQL Alchemyの動作仕様を満たす為 primary_key=True を全フィールドに付けています
     """
-    __tablename__ = 'feed_info'
+
+    __tablename__ = "feed_info"
 
     feed_publisher_name: str = Column(String, primary_key=True)
     """提供組織名 (ex: 東京都交通局)"""
@@ -400,7 +446,8 @@ class FeedInfoEntity(BASE):
 class TranslationEntity(BASE):
     """翻訳情報
     """
-    __tablename__ = 'translations'
+
+    __tablename__ = "translations"
 
     trans_id: str = Column(String, primary_key=True)
     """翻訳元日本語 - name/desc/headsign/urlで終わるフィールドが対象 (ex: 数寄屋橋)"""
