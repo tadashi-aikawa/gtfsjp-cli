@@ -13,20 +13,22 @@ class Agency(OwlMixin):
 class Stop(OwlMixin):
     id: str
     name: str
-    trip_ids: TList[str]
+    trip_ids: TOption[TList[str]]
 
 
 class GtfsClient:
     def __init__(self):
         raise NotImplementedError()
 
-    def drop_and_create(self, gtfs_dir: str, *, encoding: str = "utf_8_sig", drop_duplicates: bool = False):
+    def drop_and_create(
+        self, gtfs_dir: str, *, encoding: str = "utf_8_sig", drop_duplicates: bool = False
+    ):
         raise NotImplementedError()
 
-    def find_stop_by_id(self, id_: str) -> TOption[Stop]:
+    def find_stop_by_id(self, id_: str, with_trips: bool) -> TOption[Stop]:
         raise NotImplementedError()
 
-    def search_stops_by_name(self, name: str) -> TList[Stop]:
+    def search_stops_by_name(self, name: str, with_trips: bool) -> TList[Stop]:
         raise NotImplementedError()
 
     def fetch_agencies(self) -> TList[Agency]:

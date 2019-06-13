@@ -104,18 +104,20 @@ def to_agencies(records: Iterable[AgencyEntity]) -> "TList[Agency]":
     return TList(records).map(to_agency)
 
 
-def to_stop(record: StopEntity) -> "Stop":
+def to_stop(record: StopEntity, with_trips: bool) -> "Stop":
     return Stop.from_dict(
         {
             "id": record.stop_id,
             "name": record.stop_name,
-            "trip_ids": TIterator(record.stop_times).map(lambda x: x.trip_id).uniq().to_list(),
+            "trip_ids": TIterator(record.stop_times).map(lambda x: x.trip_id).uniq().to_list()
+            if with_trips
+            else None,
         }
     )
 
 
-def to_stops(records: Iterable[StopEntity]) -> "TIterator[Stop]":
-    return TIterator(records).map(to_stop)
+def to_stops(records: Iterable[StopEntity], with_trips: bool) -> "TIterator[Stop]":
+    return TIterator(records).map(lambda x: to_stop(x, with_trips))
 
 
 class GtfsDbClient(GtfsClient):
@@ -128,6 +130,7 @@ class GtfsDbClient(GtfsClient):
     trip: TripDao
 
     def __init__(self, source: str = "gtfs-jp.sqlite3"):
+        # pylint: disable=super-init-not-called
         connection_string = source or ":memory:"
         self.engine = create_engine(f"sqlite:///{connection_string}", echo=False)
         self.session: Session = sessionmaker(bind=self.engine)()
@@ -143,11 +146,11 @@ class GtfsDbClient(GtfsClient):
         self.__drop_database()
         self.__create_database_with_inserts(gtfs_dir, encoding, drop_duplicates)
 
-    def find_stop_by_id(self, id_: str) -> TOption[Stop]:
-        return TOption(self.stop.find_by_id(id_)).map(to_stop)
+    def find_stop_by_id(self, id_: str, with_trips: bool) -> TOption[Stop]:
+        return TOption(self.stop.find_by_id(id_)).map(lambda x: to_stop(x, with_trips))
 
-    def search_stops_by_name(self, name: str) -> TIterator[Stop]:
-        return to_stops(self.stop.search_by_name(name))
+    def search_stops_by_name(self, name: str, with_trips: bool) -> TIterator[Stop]:
+        return to_stops(self.stop.search_by_name(name), with_trips)
 
     def fetch_agencies(self) -> TList[Agency]:
         return to_agencies(self.agency.all())
