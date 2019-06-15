@@ -396,11 +396,11 @@ class FareRuleEntity(BASE):
     )
     """経路ID (ex: 1001)"""
     origin_id: Optional[str] = Column(
-        String, ForeignKey("stops.stop_id"), primary_key=True, nullable=True
+        String, ForeignKey("stops.zone_id"), primary_key=True, nullable=True
     )
     """乗車地ゾーン (ex: Z_210)"""
     destination_id: Optional[str] = Column(
-        String, ForeignKey("stops.stop_id"), primary_key=True, nullable=True
+        String, ForeignKey("stops.zone_id"), primary_key=True, nullable=True
     )
     """降車地ゾーン (ex: Z_210)"""
     contains_id: Optional[str] = Column(String)
@@ -413,11 +413,11 @@ class FareRuleEntity(BASE):
     )
     """紐づく運賃属性情報。fare_attributes.currency_typeがJPY固定であるため擬似的にmany to oneとみなすことができる"""
     origin_stop: StopEntity = relationship(
-        "StopEntity", primaryjoin="FareRuleEntity.origin_id==StopEntity.stop_id"
+        "StopEntity", primaryjoin="FareRuleEntity.origin_id==StopEntity.zone_id"
     )
     """乗車地の停留所/標柱"""
     destination_stop: StopEntity = relationship(
-        "StopEntity", primaryjoin="FareRuleEntity.destination_id==StopEntity.stop_id"
+        "StopEntity", primaryjoin="FareRuleEntity.destination_id==StopEntity.zone_id"
     )
     """降車地の停留所/標柱"""
 
