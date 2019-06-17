@@ -35,6 +35,7 @@ from gtfsjpcli.dao.entities import (
 from gtfsjpcli.dao.route import RouteDao
 from gtfsjpcli.dao.stop import StopDao
 from gtfsjpcli.dao.trip import TripDao
+from gtfsjpcli.utils.dicts import fill_none_if_empty
 
 ENTITIES = [
     {"file": "agency.txt", "clz": AgencyEntity},
@@ -173,14 +174,15 @@ class GtfsDbClient(GtfsClient):
         spinner = Halo(text=f"{file_name:<20} -- Loading", spinner="dots", stream=sys.stderr)
 
         spinner.start()
-        dicts = list(
-            load_csvf(
+        dicts = [
+            fill_none_if_empty(x)
+            for x in load_csvf(
                 os.path.join(gtfs_dir, file_name),
                 fieldnames=None,
                 encoding=encoding,
                 drop_duplicates=drop_duplicates,
             )
-        )
+        ]
         spinner.stop()
 
         if dicts:
