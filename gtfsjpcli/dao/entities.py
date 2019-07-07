@@ -232,7 +232,7 @@ class TripEntity(BASE):
     jp_office_id: Optional[str] = Column(String, ForeignKey("office_jp.office_id"))
     """営業所ID (ex: S)"""
 
-    route: RouteEntity = relationship("RouteEntity", uselist=True, back_populates="trips")
+    route: RouteEntity = relationship("RouteEntity", uselist=False, back_populates="trips")
     """便の紐づく経路"""
     office: Optional["OfficeJpEntity"] = relationship(
         "OfficeJpEntity", uselist=False, back_populates="trips"
