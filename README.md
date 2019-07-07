@@ -1,4 +1,5 @@
-# gtfsjp-cli
+gtfsjp-cli
+==========
 
 **⚠ 本プロジェクトはお試し版であり、開発中です**
 
@@ -10,17 +11,11 @@
 
 [インストールから実行までのデモ動画](https://dl.dropboxusercontent.com/s/zqtw0tzshfp1c9l/demo.mp4) をご覧下さい
 
-## インストール方法
+## 動作環境
 
-### 前提条件
+Python3.6以上
 
-以下がインストールされていること。
-
-* Python3.6以上
-* pip
-* [pipenv](https://pypi.org/project/pipenv/)
-
-### インストール
+## インストール
 
 ```
 $ pip install git+https://github.com/tadashi-aikawa/gtfsjp-cli.git
