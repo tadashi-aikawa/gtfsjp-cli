@@ -24,7 +24,7 @@ $ pip install git+https://github.com/tadashi-aikawa/gtfsjp-cli.git
 Pipenvの場合はeggの指定が必要です。
 
 ```
-$ pip install git+https://github.com/tadashi-aikawa/gtfsjp-cli.git#egg=gtfsjp-cli
+$ pipenv install git+https://github.com/tadashi-aikawa/gtfsjp-cli.git#egg=gtfsjp-cli
 ```
 
 ## 開発者向け
