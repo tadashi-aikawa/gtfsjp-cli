@@ -21,6 +21,12 @@ Python3.6以上
 $ pip install git+https://github.com/tadashi-aikawa/gtfsjp-cli.git
 ```
 
+Pipenvの場合はeggの指定が必要です。
+
+```
+$ pip install git+https://github.com/tadashi-aikawa/gtfsjp-cli.git#egg=gtfsjp-cli
+```
+
 ## 開発者向け
 
 ### 動作要件
